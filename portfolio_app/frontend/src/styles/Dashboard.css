@@ -1,0 +1,113 @@
+.dashboard-container {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f9;
+  }
+  
+  h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+  }
+  
+  h2, h3 {
+    color: #333;
+    font-size: 1.5rem;
+    margin-top: 20px;
+  }
+  
+  .actions, .add-action, .add-transaction, .chart-container, .total-value {
+    margin-bottom: 30px;
+  }
+  
+  /* Stilovi za akcije */
+  .action-card {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .action-card h3 {
+    font-size: 1.25rem;
+    margin: 0;
+  }
+  
+  .action-card p {
+    margin: 5px 0;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Stilovi za formu za dodavanje akcija i transakcija */
+  .add-action, .add-transaction {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .add-action input, .add-transaction input, .add-transaction select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
+  
+  .add-action button, .add-transaction button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .add-action button:hover, .add-transaction button:hover {
+    background-color: #218838;
+  }
+  
+  /* Stilovi za grafikon */
+  .chart-container {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  /* Stilovi za ukupnu vrednost portfolija */
+  .total-value {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .total-value h3 {
+    font-size: 1.25rem;
+    color: #333;
+    margin: 10px 0;
+  }
