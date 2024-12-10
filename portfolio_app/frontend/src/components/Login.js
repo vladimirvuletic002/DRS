@@ -1,45 +1,42 @@
 import React, { useState } from 'react';
-import '../styles/auth.css'; // Importuj auth.css iz novog direktorijuma
+import { useNavigate } from 'react-router-dom';
+import '../styles/auth.css'; 
 
-function Login() {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+const Login = ({ onLogin }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const response = await fetch('http://localhost:5000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ email, password }),
+        credentials: 'include',
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
-        setSuccessMessage('Login uspešan!');
-        setError('');
+        setSuccessMessage("Uspešno ste prijavljeni!");
+        setError("");
+        onLogin(email); // Prosledi email roditelju (App.js)
+        navigate('/dashboard'); // Preusmeravanje na dashboard
       } else {
-        setError('Došlo je do greške pri logovanju.');
-        setSuccessMessage('');
+        setError(data.error || "Neispravni kredencijali. Pokušajte ponovo.");
+        setSuccessMessage("");
       }
     } catch (error) {
-      setError('Server nije dostupan.');
-      setSuccessMessage('');
+      console.error("Error:", error);
+      setError("Server nije dostupan. Pokušajte kasnije.");
+      setSuccessMessage("");
     }
   };
 
@@ -52,8 +49,8 @@ function Login() {
           <input
             type="email"
             name="email"
-            value={formData.email}
-            onChange={handleChange}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
@@ -62,17 +59,20 @@ function Login() {
           <input
             type="password"
             name="password"
-            value={formData.password}
-            onChange={handleChange}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
         <button type="submit">Prijavi se</button>
         {error && <p className="error-message">{error}</p>}
         {successMessage && <p className="success-message">{successMessage}</p>}
+        <p className='register-question'>Ako nemas nalog <span className="register-link" onClick={() => navigate("/register")}>Registruj se.</span></p>
       </form>
+
+      
     </div>
   );
-}
+};
 
 export default Login;

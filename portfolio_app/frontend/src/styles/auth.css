@@ -66,4 +66,13 @@
     text-align: center;
     margin-bottom: 20px;
   }
+
+  .register-question{
+    text-align: center;
+  }
+
+  .register-link:hover{
+    color: darkblue;
+    cursor: pointer;
+  }
   

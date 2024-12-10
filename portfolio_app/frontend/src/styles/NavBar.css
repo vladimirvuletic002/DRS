@@ -24,6 +24,10 @@ body {
     font-size: 24px;
     font-weight: bold;
   }
+
+  .navbar-logo:hover{
+    cursor: pointer;
+  }
   
   .navbar-links button {
     background-color: #555;
@@ -100,4 +104,10 @@ body {
   
   .btn-secondary:hover {
     background-color: #e03128;
+  }
+
+  .navbar-user-email {
+    margin-right: 10px;
+    font-weight: bold;
+    color: white;
   }

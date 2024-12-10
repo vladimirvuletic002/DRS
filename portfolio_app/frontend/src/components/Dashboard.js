@@ -140,7 +140,7 @@ function Dashboard() {
   return (
     <div className="dashboard-container">
       {/* Navigation Bar */}
-      <NavBar isAuthenticated={false} /> {/* Podešavanje za demo, promeni ako je potrebno */}
+      
 
       <h1>Dobrodošli na moj Portfolio</h1>
 

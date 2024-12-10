@@ -1,14 +1,14 @@
 import React from "react";
 import "../styles/NavBar.css"; 
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const NavBar = ({ isAuthenticated, onLogout }) => {
-    const [showLoginModal, setShowLoginModal] = useState(false);
+const NavBar = ({ isAuthenticated, userEmail, onLogout }) => {
+    //const [showLoginModal, setShowLoginModal] = useState(false);
     const navigate = useNavigate(); // Hook za navigaciju
 
     const handleLogout = () => {
         onLogout(); // Funkcija za odjavu prosleđena kroz props
+        navigate("/");
       };
 
     const handleRegisterRedirect = () => {
@@ -23,11 +23,12 @@ const NavBar = ({ isAuthenticated, onLogout }) => {
         <nav className="navbar">
           <div className="navbar-container">
             <div className="navbar-logo" onClick={() => navigate("/")}>
-              Crypto Portfolio
+              Portfolio Akcija
             </div>
             <div className="navbar-links">
               {isAuthenticated ? (
                 <>
+                  <span className="navbar-user-email">{userEmail}</span>
                   <button onClick={handleLogout} className="btn btn-logout">
                     Odjavi se
                   </button>
@@ -45,7 +46,7 @@ const NavBar = ({ isAuthenticated, onLogout }) => {
             </div>
           </div>
     
-          {/* Modal za prijavu */}
+          
           
         </nav>
       );

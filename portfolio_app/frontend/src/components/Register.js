@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import '../styles/auth.css'; // Importuj auth.css iz novog direktorijuma
+import { useNavigate } from 'react-router-dom'; // Import za navigaciju
+import '../styles/auth.css'; 
 
 function Register() {
+  const navigate = useNavigate(); // Hook za navigaciju
+
   const [formData, setFormData] = useState({
     ime: '',
     prezime: '',
@@ -10,7 +13,7 @@ function Register() {
     drzava: '',
     brojTelefona: '',
     email: '',
-    lozinka: ''
+    lozinka: '',
   });
 
   const [error, setError] = useState('');
@@ -19,32 +22,37 @@ function Register() {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const response = await fetch('http://localhost:5000/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
         setSuccessMessage('Korisnik je uspešno registrovan!');
         setError('');
+        // Preusmeravanje na stranicu za prijavu nakon 2 sekunde
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
       } else {
-        setError('Došlo je do greške pri registraciji.');
+        setError(data.error || 'Došlo je do greške pri registraciji.');
         setSuccessMessage('');
       }
     } catch (error) {
-      setError('Server nije dostupan.');
+      setError('Server nije dostupan. Pokušajte kasnije.');
       setSuccessMessage('');
     }
   };
@@ -53,6 +61,7 @@ function Register() {
     <div className="auth-container">
       <form className="auth-form" onSubmit={handleSubmit}>
         <h2>Registracija</h2>
+
         <div>
           <label>Ime:</label>
           <input
@@ -63,6 +72,7 @@ function Register() {
             required
           />
         </div>
+
         <div>
           <label>Prezime:</label>
           <input
@@ -73,6 +83,7 @@ function Register() {
             required
           />
         </div>
+
         <div>
           <label>Adresa:</label>
           <input
@@ -83,6 +94,7 @@ function Register() {
             required
           />
         </div>
+
         <div>
           <label>Grad:</label>
           <input
@@ -93,6 +105,7 @@ function Register() {
             required
           />
         </div>
+
         <div>
           <label>Država:</label>
           <input
@@ -103,6 +116,7 @@ function Register() {
             required
           />
         </div>
+
         <div>
           <label>Broj telefona:</label>
           <input
@@ -113,6 +127,7 @@ function Register() {
             required
           />
         </div>
+
         <div>
           <label>Email:</label>
           <input
@@ -123,6 +138,7 @@ function Register() {
             required
           />
         </div>
+
         <div>
           <label>Lozinka:</label>
           <input
@@ -131,9 +147,12 @@ function Register() {
             value={formData.lozinka}
             onChange={handleChange}
             required
+            minLength={8} // Minimalna dužina lozinke
           />
         </div>
+
         <button type="submit">Registruj se</button>
+
         {error && <p className="error-message">{error}</p>}
         {successMessage && <p className="success-message">{successMessage}</p>}
       </form>
