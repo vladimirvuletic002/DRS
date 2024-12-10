@@ -1,5 +1,3 @@
-/* auth.css */
-
 /* Stilizacija celokupne forme */
 .auth-container {
     display: flex;
@@ -23,7 +21,7 @@
   .auth-form input {
     width: 100%;
     padding: 10px;
-    margin: 10px 0;
+    margin: 10px -10px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 16px;
