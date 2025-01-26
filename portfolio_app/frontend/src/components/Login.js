@@ -42,8 +42,8 @@ const Login = ({ onLogin }) => {
 
   return (
     <div className="auth-container">
-      <form className="auth-form" onSubmit={handleSubmit}>
-        <h2>Prijavi se</h2>
+      <form className="login-form" onSubmit={handleSubmit}>
+        <h2 className='classLogin'>Welcome back!</h2>
         <div>
           <label>Email:</label>
           <input
@@ -55,7 +55,7 @@ const Login = ({ onLogin }) => {
           />
         </div>
         <div>
-          <label>Lozinka:</label>
+          <label>Password:</label>
           <input
             type="password"
             name="password"
@@ -64,15 +64,16 @@ const Login = ({ onLogin }) => {
             required
           />
         </div>
-        <button type="submit">Prijavi se</button>
+        <button type="submit">Log in</button>
         {error && <p className="error-message">{error}</p>}
         {successMessage && <p className="success-message">{successMessage}</p>}
-        <p className='register-question'>Ako nemas nalog <span className="register-link" onClick={() => navigate("/register")}>Registruj se.</span></p>
+        <p className='register-question'>You are not member? <span className="register-link" onClick={() => navigate("/register")}>Sign up.</span></p>
       </form>
 
       
     </div>
   );
+  
 };
 
 export default Login;

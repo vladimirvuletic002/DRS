@@ -1,7 +1,8 @@
 /* General styles */
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: SF Pro Display, 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-weight: bolder;
   }
   
   /* Navbar styles */
@@ -12,34 +13,58 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    top: 0;
+    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.3);
   }
   
   .navbar-container {
     display: flex;
     justify-content: space-between;
     width: 100%;
+    
+  }
+
+  .navbar-logo-container {
+    display: flex;
+    font-size: 30px;
+    font-weight: 1000;
+    margin-left: 100px;
+    align-items: center;
   }
   
-  .navbar-logo {
-    font-size: 24px;
-    font-weight: bold;
+  .navbar-name {
+    margin-left: 10px;
+    padding: 10px 0px;
   }
 
   .navbar-logo:hover{
     cursor: pointer;
   }
-  
-  .navbar-links button {
-    background-color: #555;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    margin-left: 10px;
+
+  .navbar-logo{
+    margin-top: 10px;
+  }
+
+  .navbar-name:hover{
     cursor: pointer;
   }
   
+  .navbar-links button {
+    color: white;
+    background-color: #333;
+    border-bottom: 1px solid #555;
+    padding: 10px 20px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-family: Sf Pro Display;
+    margin-top: 10px;
+    font-size: 16px;
+  }
+  
   .navbar-links button:hover {
-    background-color: #777;
+    background-color: #555;
+    border-bottom: 1px solid #555;
   }
   
   /* Modal styles */
@@ -55,59 +80,57 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
   }
   
-  .modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 400px;
-    width: 90%;
-    position: relative;
-  }
-  
-  .modal-content input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    font-size: 20px;
-  }
-  
-  .btn {
-    padding: 10px 20px;
-    margin-top: 10px;
-    cursor: pointer;
-  }
-  
-  .btn-submit {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-  }
-  
-  .btn-submit:hover {
-    background-color: #45a049;
-  }
-  
-  .btn-secondary {
-    background-color: #f44336;
-    color: white;
-    border: none;
-  }
-  
-  .btn-secondary:hover {
-    background-color: #e03128;
+  .navbar-links .btn-login{
+    background-color: #5100f3;
+    font-family: Sf Pro Display
   }
 
-  .navbar-user-email {
-    margin-right: 10px;
-    font-weight: bold;
-    color: white;
+  .navbar-links .btn-login:hover{
+    background-color: #7139ff;
   }
+
+  .navbar-user-dropdown {
+    position: relative; /* Neophodno za pozicioniranje menija */
+    display: inline-block;
+}
+
+
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%; /* Meni se prikazuje ispod korisničkog emaila */
+    right: 0;
+    background-color: #333;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 0.5rem 0;
+    z-index: 100;
+    width: 150px; /* Širina menija */
+}
+
+.dropdown-menu button {
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    width: 90%;
+    font-size: 14px;
+}
+
+.dropdown-menu button:hover {
+    background-color: #444; /* Boja prilikom hover-a */
+}
+
+.dropdown-menu button {
+    border-bottom: 1px solid #555; /* Razmak između opcija */
+}
+
+.dropdown-menu .btn-logout{
+    background-color: rgb(168, 0, 39);
+}
+
+.dropdown-menu .btn-logout:hover{
+  background-color: rgb(202, 11, 55);
+}

@@ -60,10 +60,10 @@ function Register() {
   return (
     <div className="auth-container">
       <form className="auth-form" onSubmit={handleSubmit}>
-        <h2>Registracija</h2>
+        <h2 className="classReg">Registration</h2>
 
         <div>
-          <label>Ime:</label>
+          <label>Name:</label>
           <input
             type="text"
             name="ime"
@@ -74,7 +74,7 @@ function Register() {
         </div>
 
         <div>
-          <label>Prezime:</label>
+          <label>Surname:</label>
           <input
             type="text"
             name="prezime"
@@ -85,7 +85,7 @@ function Register() {
         </div>
 
         <div>
-          <label>Adresa:</label>
+          <label>Address:</label>
           <input
             type="text"
             name="adresa"
@@ -96,7 +96,7 @@ function Register() {
         </div>
 
         <div>
-          <label>Grad:</label>
+          <label>City:</label>
           <input
             type="text"
             name="grad"
@@ -107,7 +107,7 @@ function Register() {
         </div>
 
         <div>
-          <label>Država:</label>
+          <label>Country:</label>
           <input
             type="text"
             name="drzava"
@@ -118,7 +118,7 @@ function Register() {
         </div>
 
         <div>
-          <label>Broj telefona:</label>
+          <label>Mobile number:</label>
           <input
             type="text"
             name="brojTelefona"
@@ -140,7 +140,7 @@ function Register() {
         </div>
 
         <div>
-          <label>Lozinka:</label>
+          <label>Password:</label>
           <input
             type="password"
             name="lozinka"
@@ -151,13 +151,14 @@ function Register() {
           />
         </div>
 
-        <button type="submit">Registruj se</button>
+        <button type="submit">Sign up</button>
 
         {error && <p className="error-message">{error}</p>}
         {successMessage && <p className="success-message">{successMessage}</p>}
       </form>
     </div>
   );
+
 }
 
 export default Register;

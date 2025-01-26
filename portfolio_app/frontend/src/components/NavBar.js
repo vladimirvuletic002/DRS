@@ -1,55 +1,88 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../styles/NavBar.css"; 
 import { useNavigate } from "react-router-dom";
+import appLogo from '../images/app_logo.png';
 
 const NavBar = ({ isAuthenticated, userEmail, onLogout }) => {
     //const [showLoginModal, setShowLoginModal] = useState(false);
     const navigate = useNavigate(); // Hook za navigaciju
+    const [dropdownVisible, setDropdownVisible] = useState(false); // Stanje za prikaz menija
+    const dropdownRef = useRef(null); // Ref za pracenje menija
 
     const handleLogout = () => {
         onLogout(); // Funkcija za odjavu prosleđena kroz props
         navigate("/");
       };
 
-    const handleRegisterRedirect = () => {
-        navigate("/register"); // Preusmeravanje na /register
-    };
-
     const handleLoginRedirect = () => {
       navigate("/login"); // Preusmeravanje na Login stranicu
+    };
+
+  const toggleDropdown = () => {
+    setDropdownVisible(!dropdownVisible);
   };
 
-    return (
-        <nav className="navbar">
+  // Zatvaranje menija klikom van njega
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            setDropdownVisible(false); // Zatvaranje menija
+        }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+    };
+}, []);
+
+  return (
+      <nav className="navbar">
           <div className="navbar-container">
-            <div className="navbar-logo" onClick={() => navigate("/")}>
-              Portfolio Akcija
-            </div>
-            <div className="navbar-links">
-              {isAuthenticated ? (
-                <>
-                  <span className="navbar-user-email">{userEmail}</span>
-                  <button onClick={handleLogout} className="btn btn-logout">
-                    Odjavi se
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={handleLoginRedirect}
-                    className="btn btn-login"
-                  >
-                    Prijavi se
-                  </button>
-                </>
-              )}
-            </div>
+              <div className="navbar-logo-container">
+                  <div className="navbar-logo" onClick={() => navigate("/")}>
+                      <img className="logo" src={appLogo} alt="app_logo" width="40" />
+                  </div>
+                  <div className="navbar-name" onClick={() => navigate("/")}>
+                      Stocks Portfolio
+                  </div>
+              </div>
+              <div className="navbar-links">
+                  {isAuthenticated ? (
+                      <div className="navbar-user-dropdown" ref={dropdownRef}>
+                          <button
+                              className="navbar-user-email"
+                              onClick={toggleDropdown}
+                          >
+                              {userEmail}
+                          </button>
+                          {dropdownVisible && (
+                              <div className="dropdown-menu">
+                                  <button onClick={() => {navigate("/dashboard"); toggleDropdown();}}>
+                                      DashBoard
+                                  </button>
+                                  <button onClick={() => {navigate("/edit-profile"); toggleDropdown();}}>
+                                      Edit Profile
+                                  </button>
+                                  <button onClick={() => {navigate("/buy-sell"); toggleDropdown();}}>
+                                      Buy/Sell Stocks
+                                  </button>
+                                  <button className="btn-logout" onClick={handleLogout}>Logout</button>
+                              </div>
+                          )}
+                      </div>
+                  ) : (
+                      <button
+                          onClick={handleLoginRedirect}
+                          className="btn-login"
+                      >
+                          Sign in
+                      </button>
+                  )}
+              </div>
           </div>
-    
-          
-          
-        </nav>
-      );
+      </nav>
+  );
 
 
 };

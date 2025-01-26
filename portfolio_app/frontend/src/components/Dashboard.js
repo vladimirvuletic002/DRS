@@ -3,6 +3,7 @@ import NavBar from './NavBar';
 import '../styles/Dashboard.css'; // Importuj stilove za Dashboard
 import { Line } from 'react-chartjs-2'; // Importuj Line grafikon iz chart.js
 import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement } from 'chart.js';
+import axios from 'axios';
 
 // Registracija komponenti za ChartJS
 ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement);
