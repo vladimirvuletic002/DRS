@@ -9,9 +9,22 @@ const NavBar = ({ isAuthenticated, userEmail, onLogout }) => {
     const [dropdownVisible, setDropdownVisible] = useState(false); // Stanje za prikaz menija
     const dropdownRef = useRef(null); // Ref za pracenje menija
 
-    const handleLogout = () => {
-        onLogout(); // Funkcija za odjavu prosleđena kroz props
-        navigate("/");
+    const handleLogout = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+    
+            if (response.ok) {
+                onLogout();  // Ažuriranje stanja na frontend-u (npr. setIsAuthenticated(false))
+                navigate("/");  // Preusmeravanje na početnu stranicu
+            } else {
+                console.error("Logout failed");
+            }
+        } catch (error) {
+            console.error("Error during logout:", error);
+        }
       };
 
     const handleLoginRedirect = () => {

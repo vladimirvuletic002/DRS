@@ -14,6 +14,7 @@ function Register() {
     brojTelefona: '',
     email: '',
     lozinka: '',
+    potvrda: '',
   });
 
   const [error, setError] = useState('');
@@ -145,6 +146,18 @@ function Register() {
             type="password"
             name="lozinka"
             value={formData.lozinka}
+            onChange={handleChange}
+            required
+            minLength={8} // Minimalna dužina lozinke
+          />
+        </div>
+
+        <div>
+          <label>Confirm password:</label>
+          <input
+            type="password"
+            name="potvrda"
+            value={formData.potvrda}
             onChange={handleChange}
             required
             minLength={8} // Minimalna dužina lozinke

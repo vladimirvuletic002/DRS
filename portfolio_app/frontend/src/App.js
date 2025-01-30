@@ -6,6 +6,7 @@ import Login from './components/Login';
 import NavBar from './components/NavBar';
 import Home from "./components/Home";
 import Dashboard from "./components/Dashboard";
+import EditProfile from './components/EditProfile';
 
 
 function App() {
@@ -55,6 +56,7 @@ function App() {
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
         <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Home /> } />
         <Route path="/" element={<Home />} />
+        <Route path="/edit-profile" element={<EditProfile />} />
         
       </Routes>
 

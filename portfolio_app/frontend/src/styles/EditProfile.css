@@ -1,0 +1,74 @@
+.edit-profile-container{
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    background-image: linear-gradient(to bottom left, rgb(59, 0, 176), rgb(37, 1, 63));
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 20px;
+    font-family: SF Pro Display, 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.edit-data-container {
+    display:block;
+ background-color: rgba(0,0,0,0.5);
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9);
+  width: 100%;
+  max-width: 800px;
+  min-height: 100vh;
+  color: white;
+}
+
+.edit-form{
+    display: block;
+}
+
+
+.edit-form input{
+    
+    padding: 10px;
+    margin: 10px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: SF Pro Display, 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.edit-form button{
+    font-size: 16px;
+    font-family: SF Pro Display, 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    margin-top: 10px;
+    margin-left: 5px;
+}
+
+label{
+    margin-left: 10px;
+   
+}
+
+.h1-edit{
+    color: white;
+}
+
+.h2-edit{
+    color: white;
+}
+
+table{
+    border-collapse: separate;
+  border-spacing: 50px 0;
+}
+
+.message{
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    width: max-content;
+    text-align: left;
+    margin-left: 50px;
+    border-radius: 5px;
+}
+
