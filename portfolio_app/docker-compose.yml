@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Backend - Flask aplikacija
+  backend:
+    depends_on:
+      - database
+    build:
+      context: ./Flask-BackEnd  # Putanja do direktorijuma sa Dockerfile-om
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=mysql://vladimir002:1234@database:3306/portfolio_app
+    networks:
+      - app_network
+
+  # Frontend - React aplikacija
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://backend:5000
+    networks:
+      - app_network
+
+  # Baza podataka - MySQL
+  database:
+    image: mysql:8.0
+    environment:
+      MYSQL_HOST : database
+      MYSQL_USER: vladimir002
+      MYSQL_PASSWORD: 1234
+      MYSQL_DATABASE: portfolio_app
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app_network
+
+# Definicija volumena
+volumes:
+  db_data:
+
+networks:
+  app_network:
+    driver: bridge # Kreira mrežu za komunikaciju između servisa

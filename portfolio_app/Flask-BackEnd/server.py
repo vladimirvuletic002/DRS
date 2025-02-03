@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from flask import Flask, render_template, request, redirect, url_for, session, make_response, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS  # Uvozimo CORS
-from database import init_app  # Import iz database/db_config.py
+from database.db_config import init_app  # Import iz database/db_config.py
 from flask_mysqldb import MySQL
 
 app = Flask(__name__)
@@ -182,4 +182,4 @@ def change_password():
     return jsonify({'message': 'Password changed successfully'}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
