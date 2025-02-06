@@ -6,14 +6,14 @@ function Register() {
   const navigate = useNavigate(); // Hook za navigaciju
 
   const [formData, setFormData] = useState({
-    ime: '',
-    prezime: '',
-    adresa: '',
-    grad: '',
-    drzava: '',
-    brojTelefona: '',
+    first_name: '',
+    last_name: '',
+    address: '',
+    city: '',
+    country: '',
+    phone: '',
     email: '',
-    lozinka: '',
+    password: '',
     potvrda: '',
   });
 
@@ -67,8 +67,8 @@ function Register() {
           <label>Name:</label>
           <input
             type="text"
-            name="ime"
-            value={formData.ime}
+            name="first_name"
+            value={formData.first_name}
             onChange={handleChange}
             required
           />
@@ -78,8 +78,8 @@ function Register() {
           <label>Surname:</label>
           <input
             type="text"
-            name="prezime"
-            value={formData.prezime}
+            name="last_name"
+            value={formData.last_name}
             onChange={handleChange}
             required
           />
@@ -89,8 +89,8 @@ function Register() {
           <label>Address:</label>
           <input
             type="text"
-            name="adresa"
-            value={formData.adresa}
+            name="address"
+            value={formData.address}
             onChange={handleChange}
             required
           />
@@ -100,8 +100,8 @@ function Register() {
           <label>City:</label>
           <input
             type="text"
-            name="grad"
-            value={formData.grad}
+            name="city"
+            value={formData.city}
             onChange={handleChange}
             required
           />
@@ -111,8 +111,8 @@ function Register() {
           <label>Country:</label>
           <input
             type="text"
-            name="drzava"
-            value={formData.drzava}
+            name="country"
+            value={formData.country}
             onChange={handleChange}
             required
           />
@@ -122,8 +122,8 @@ function Register() {
           <label>Mobile number:</label>
           <input
             type="text"
-            name="brojTelefona"
-            value={formData.brojTelefona}
+            name="phone"
+            value={formData.phone}
             onChange={handleChange}
             required
           />
@@ -144,8 +144,8 @@ function Register() {
           <label>Password:</label>
           <input
             type="password"
-            name="lozinka"
-            value={formData.lozinka}
+            name="password"
+            value={formData.password}
             onChange={handleChange}
             required
             minLength={8} // Minimalna dužina lozinke

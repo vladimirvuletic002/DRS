@@ -5,17 +5,24 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from flask import Flask, render_template, request, redirect, url_for, session, make_response, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS  # Uvozimo CORS
-from database.db_config import init_app  # Import iz database/db_config.py
-from flask_mysqldb import MySQL
+#from database.db_config import init_app  # Import iz database/db_config.py
+#from flask_mysqldb import MySQL
+
+from models.user import User
+from config import Config
+from models import db
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Siguran ključ za sesiju
+app.config.from_object(Config)
+
+db.init_app(app)
 
 # Omogućavanje CORS-a za sve rute
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": ["http://localhost:3000"]}})
 
 # Inicijalizacija MySQL baze
-mysql = init_app(app)
+#mysql = init_app(app)
 
 # Pocetna stranica
 @app.route('/')
@@ -25,20 +32,20 @@ def index():
     return render_template('/fronted/public/index.html')
 
 # Funkcija za učitavanje korisnika iz baze
-def get_user_by_email(email):
-    with mysql.connection.cursor() as cursor:
-        cursor.execute("SELECT id, email, password FROM users WHERE email = %s", (email,))
-        return cursor.fetchone()
+#def get_user_by_email(email):
+    #with mysql.connection.cursor() as cursor:
+        #cursor.execute("SELECT id, email, password FROM users WHERE email = %s", (email,))
+        #return cursor.fetchone()
 
 # Funkcija za dodavanje korisnika u bazu
-def add_user(first_name, last_name, address, city, country, phone, email, password):
-    hashed_password = generate_password_hash(password)
-    with mysql.connection.cursor() as cursor:
-        cursor.execute("""
-            INSERT INTO users (first_name, last_name, address, city, country, phone_number, email, password)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """, (first_name, last_name, address, city, country, phone, email, hashed_password))
-        mysql.connection.commit()
+#def add_user(first_name, last_name, address, city, country, phone, email, password):
+    #hashed_password = generate_password_hash(password)
+    #with mysql.connection.cursor() as cursor:
+        #cursor.execute("""
+            #INSERT INTO users (first_name, last_name, address, city, country, phone_number, email, #password)
+            #VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        #""", (first_name, last_name, address, city, country, phone, email, hashed_password))
+        #mysql.connection.commit()
 
 # Prijava korisnika
 @app.route('/login', methods=['POST'])
@@ -46,15 +53,16 @@ def login():
     if request.method == 'POST':
         data = request.get_json()
         email = data.get('email')
+        user = User.query.filter_by(email=data['email']).first()
         password = data.get('password')
 
         # Proveri korisnika prema email-u
-        user = get_user_by_email(email)
+        #user = get_user_by_email(email)
 
         # Proveri da li postoji korisnik i da li lozinka odgovara
-        if user and check_password_hash(user[2], password):  # user[2] je password iz tuple-a
-            session['user_id'] = user[0]  # user[0] je id iz tuple-a
-            session['user_name'] = user[1]  # user[1] je email iz tuple-a
+        if user and check_password_hash(user.password_hash, password):  # user[2] je password iz tuple-a
+            session['user_id'] = user.id  # user[0] je id iz tuple-a
+            session['user_name'] = user.email  # user[1] je email iz tuple-a
             return jsonify({'message': 'Prijavljeni ste uspešno!'}), 200
         else:
             return jsonify({'error': 'Invalid email or password!'}), 400
@@ -71,28 +79,37 @@ def register():
         data = request.get_json()
         
         # Ekstrahovanje podataka iz JSON-a
-        first_name = data.get('ime')
-        last_name = data.get('prezime')
-        address = data.get('adresa')
-        city = data.get('grad')
-        country = data.get('drzava')
-        phone_number = data.get('brojTelefona')
-        email = data.get('email')
-        password = data.get('lozinka')
+        
+        password = data.get('password')
         confirm = data.get('potvrda')
         
         # Proveri da li korisnik sa tim email-om već postoji
-        if get_user_by_email(email):
-            return jsonify({'error': 'Email already exists!'}), 400
+        #if get_user_by_email(email):
+            #return jsonify({'error': 'Email already exists!'}), 400
+        if User.query.filter_by(email=data['email']).first():
+            return jsonify({'error': 'Email already registered'}), 400
         
         # Proveri da li su nova lozinka i potvrda iste
         if password != confirm:
             return jsonify({'error': "Passwords don't match!"}), 400
+
+        new_user = User(
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            address=data['address'],
+            city=data['city'],
+            country=data['country'],
+            phone=data['phone'],
+            email=data['email'],
+            password_hash=generate_password_hash(data['password'])
+        )
         
         # Kreiraj novog korisnika i dodaj ga u bazu
-        add_user(first_name, last_name, address, city, country, phone_number, email, password)
+        #add_user(first_name, last_name, address, city, country, phone_number, email, password)
         
-        return jsonify({'message': 'Korisnik je uspešno registrovan!'}), 201
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({'message': 'User registered successfully'}), 201
     
     return {'error': 'Method not allowed'}, 405
 
@@ -112,21 +129,20 @@ def get_user():
 
     user_id = session['user_id']
     
-    with mysql.connection.cursor() as cursor:
-        cursor.execute("SELECT first_name, last_name, address, city, country, phone_number, email FROM users WHERE id = %s", (user_id,))
-        user = cursor.fetchone()
+    # Koristi SQLAlchemy da nađe korisnika po ID-ju
+    user = User.query.get(user_id)
     
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
     return jsonify({
-        'first_name': user[0],
-        'last_name': user[1],
-        'address': user[2],
-        'city': user[3],
-        'country': user[4],
-        'phone_number': user[5],
-        'email': user[6]
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'address': user.address,
+        'city': user.city,
+        'country': user.country,
+        'phone': user.phone,
+        'email': user.email
     }), 200
 
 
@@ -139,12 +155,22 @@ def update_profile():
     data = request.get_json()
     user_id = session['user_id']
 
-    with mysql.connection.cursor() as cursor:
-        cursor.execute("""
-            UPDATE users SET first_name=%s, last_name=%s, address=%s, city=%s, country=%s, phone_number=%s
-            WHERE id = %s
-        """, (data['first_name'], data['last_name'], data['address'], data['city'], data['country'], data['phone_number'], user_id))
-        mysql.connection.commit()
+    # Pronađi korisnika u bazi
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    # Ažuriraj korisničke podatke
+    user.first_name = data.get('first_name', user.first_name)
+    user.last_name = data.get('last_name', user.last_name)
+    user.address = data.get('address', user.address)
+    user.city = data.get('city', user.city)
+    user.country = data.get('country', user.country)
+    user.phone = data.get('phone', user.phone)
+
+    # Sačuvaj izmene
+    db.session.commit()
 
     return jsonify({'message': 'Profile updated successfully!'}), 200
 
@@ -166,20 +192,21 @@ def change_password():
     if new_password != confirm_password:
         return jsonify({'error': 'New password and confirmation do not match'}), 400
 
-    with mysql.connection.cursor() as cursor:
-        cursor.execute("SELECT password FROM users WHERE id = %s", (user_id,))
-        user = cursor.fetchone()
+    # Pronađi korisnika u bazi
+    user = User.query.get(user_id)
 
-        # Proveri da li je uneta lozinka ispravna
-        if not user or not check_password_hash(user[0], current_password):
-            return jsonify({'error': 'Incorrect current password'}), 400
+    if not user or not check_password_hash(user.password_hash, current_password):
+        return jsonify({'error': 'Incorrect current password'}), 400
 
-        # Hesiraj novu lozinku i ažuriraj u bazi
-        hashed_password = generate_password_hash(new_password)
-        cursor.execute("UPDATE users SET password = %s WHERE id = %s", (hashed_password, user_id))
-        mysql.connection.commit()
+    # Hesiraj novu lozinku i sačuvaj u bazi
+    user.password_hash = generate_password_hash(new_password)
+    db.session.commit()
 
-    return jsonify({'message': 'Password changed successfully'}), 200
+    return jsonify({'passMessage': 'Password changed successfully'}), 200
+
+# Kreiranje baze ako ne postoji
+with app.app_context():
+    db.create_all()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

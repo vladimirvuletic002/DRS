@@ -8,7 +8,7 @@ function EditProfile() {
         address: "",
         city: "",
         country: "",
-        phone_number: "",
+        phone: "",
         email: ""
     });
 
@@ -122,7 +122,7 @@ function EditProfile() {
                         </tr>
                         <tr>
                             <td><input type="text" name="country" value={userData.country} onChange={handleInputChange} placeholder="Country" required /></td>
-                            <td><input type="text" name="phone_number" value={userData.phone_number} onChange={handleInputChange} placeholder="Mobile number" required /></td>
+                            <td><input type="text" name="phone" value={userData.phone} onChange={handleInputChange} placeholder="Mobile number" required /></td>
                         </tr>
 
                         <tr>

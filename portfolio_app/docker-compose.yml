@@ -3,16 +3,16 @@ version: '3.8'
 services:
   # Backend - Flask aplikacija
   backend:
-    depends_on:
-      - database
     build:
       context: ./Flask-BackEnd  # Putanja do direktorijuma sa Dockerfile-om
       dockerfile: Dockerfile
     container_name: backend
     ports:
       - "5000:5000"
+    volumes:
+      - .:/Flask-BackEnd
     environment:
-      - DATABASE_URL=mysql://vladimir002:1234@database:3306/portfolio_app
+      - DATABASE_URL=mysql+pymysql://vladimir002:1234@database:3306/portfolio_app #mysql+pymysql://root:Shadow2002@localhost:3306/portfolio_db
     networks:
       - app_network
 
@@ -33,9 +33,7 @@ services:
   database:
     image: mysql:8.0
     environment:
-      MYSQL_HOST : database
-      MYSQL_USER: vladimir002
-      MYSQL_PASSWORD: 1234
+      MYSQL_PASSWORD: 1234  # Loza za root korisnika
       MYSQL_DATABASE: portfolio_app
     ports:
       - "3307:3306"
