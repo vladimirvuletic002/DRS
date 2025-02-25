@@ -7,6 +7,8 @@ services:
       context: ./Flask-BackEnd  # Putanja do direktorijuma sa Dockerfile-om
       dockerfile: Dockerfile
     container_name: backend
+    depends_on:
+      - database
     ports:
       - "5000:5000"
     volumes:

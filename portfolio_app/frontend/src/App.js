@@ -7,11 +7,17 @@ import NavBar from './components/NavBar';
 import Home from "./components/Home";
 import Dashboard from "./components/Dashboard";
 import EditProfile from './components/EditProfile';
+import Transaction from './components/Transaction';
+import protobuf from 'protobufjs';
+
+import WebSocket from 'isomorphic-ws';
+const { Buffer } = require('buffer/');
 
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userEmail, setUserEmail] = useState("");
+
 
   useEffect(() => {
     const storedAuth = localStorage.getItem("isAuthenticated");
@@ -21,6 +27,8 @@ function App() {
       setIsAuthenticated(true);
       setUserEmail(storedEmail);
     }
+
+
   }, []);
 
   const handleLogin = (email) => {
@@ -57,7 +65,7 @@ function App() {
         <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Home /> } />
         <Route path="/" element={<Home />} />
         <Route path="/edit-profile" element={<EditProfile />} />
-        
+        <Route path="/transaction" element={<Transaction/>} />
       </Routes>
 
     </Router>

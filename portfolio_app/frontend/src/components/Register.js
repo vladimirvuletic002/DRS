@@ -20,6 +20,13 @@ function Register() {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
+  const clearMessages = () => {
+    setTimeout(() => {
+        setError('');
+        setSuccessMessage('');
+    }, 6000);
+  };
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -51,10 +58,12 @@ function Register() {
       } else {
         setError(data.error || 'Došlo je do greške pri registraciji.');
         setSuccessMessage('');
+        clearMessages();
       }
     } catch (error) {
       setError('Server nije dostupan. Pokušajte kasnije.');
       setSuccessMessage('');
+      clearMessages();
     }
   };
 

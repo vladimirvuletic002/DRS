@@ -77,7 +77,7 @@ const NavBar = ({ isAuthenticated, userEmail, onLogout }) => {
                                   <button onClick={() => {navigate("/edit-profile"); toggleDropdown();}}>
                                       Edit Profile
                                   </button>
-                                  <button onClick={() => {navigate("/buy-sell"); toggleDropdown();}}>
+                                  <button onClick={() => {navigate("/transaction"); toggleDropdown();}}>
                                       Buy/Sell Stocks
                                   </button>
                                   <button className="btn-logout" onClick={handleLogout}>Logout</button>

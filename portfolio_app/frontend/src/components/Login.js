@@ -9,6 +9,13 @@ const Login = ({ onLogin }) => {
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
 
+  const clearMessages = () => {
+    setTimeout(() => {
+        setError('');
+        setSuccessMessage('');
+    }, 6000);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -32,11 +39,13 @@ const Login = ({ onLogin }) => {
       } else {
         setError(data.error || "Neispravni kredencijali. Pokušajte ponovo.");
         setSuccessMessage("");
+        clearMessages();
       }
     } catch (error) {
       console.error("Error:", error);
       setError("Server nije dostupan. Pokušajte kasnije.");
       setSuccessMessage("");
+      clearMessages();
     }
   };
 

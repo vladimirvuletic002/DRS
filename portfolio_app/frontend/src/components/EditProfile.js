@@ -15,8 +15,16 @@ function EditProfile() {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");  // Potvrda nove lozinke
-    const [message, setMessage] = useState("");
-    const [passMessage, setPassMessage] = useState("");
+    const [message, setMessage] = useState('');
+    const [passMessage, setPassMessage] = useState('');
+
+    // Funkcija za automatsko brisanje poruka
+    const clearMessages = () => {
+        setTimeout(() => {
+            setMessage('');
+            setPassMessage('');
+        }, 6000);
+    };
 
     useEffect(() => {
         // Fetch user data from the server
@@ -51,7 +59,10 @@ function EditProfile() {
             body: JSON.stringify(userData)
         })
         .then(response => response.json())
-        .then(data => setMessage(data.message || data.error))
+        .then(data => {
+            setMessage(data.message || data.error);
+            clearMessages();
+        })
         .catch(error => console.error("Error updating profile:", error));
     };
 
@@ -59,11 +70,13 @@ function EditProfile() {
         e.preventDefault();
         if (!currentPassword || !newPassword || !confirmPassword) {
             setPassMessage("All fields are required!");
+            clearMessages();
             return;
         }
 
         if (newPassword !== confirmPassword) {
             setPassMessage("Passwords don't match!");
+            clearMessages();
             return;
         }
 
@@ -80,7 +93,9 @@ function EditProfile() {
             })
         })
         .then(response => response.json())
-        .then(data => setPassMessage(data.passMessage || data.error))
+        .then(data => {
+            setPassMessage(data.passMessage || data.error);clearMessages();
+        })
         .catch(error => console.error("Error changing password:", error));
     };
 
