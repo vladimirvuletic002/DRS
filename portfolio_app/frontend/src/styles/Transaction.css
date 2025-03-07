@@ -25,7 +25,9 @@
 .transaction-form input{
     padding: 10px;
     margin: 10px 10px 20px 10px;
-    border: 1px solid #ddd;
+    border: 1px solid rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.5);
+    color: white;
     border-radius: 5px;
     font-size: 16px;
     font-family: SF Pro Display, 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -44,8 +46,8 @@
 
 .autocomplete-list {
     position: absolute;
-    background: white;
-    border: 1px solid #ccc;
+    border: 1px solid rgba(0,0,0,0.5);
+    background-color: rgb(28, 0, 48);
     max-height: 200px;
     overflow-y: auto;
     width: 40%;
@@ -53,7 +55,9 @@
     padding: 0;
     margin: 0;
     z-index: 1000;
-    color: black;
+    color: white;
+    font-size: 16px;
+    margin-top: -20px;
 }
 
 .autocomplete-list li {
@@ -62,10 +66,33 @@
 }
 
 .autocomplete-list li:hover {
-    background-color: #f0f0f0;
+    background-color: rgb(10, 0, 17);
 }
 
-.error-message, .success-message {
+.tr-error-message,
+.tr-success-message {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 16px;
+}
+  
+.tr-error-message {
+  background-color: rgb(149, 0, 0);
+  color: white;
+  padding: 10px;
+  width: max-content;
+  border-radius: 5px;
+}
+  
+.tr-success-message {
+  background-color: green;
+  color: white;
+  padding: 10px;
+  width: max-content;
+  border-radius: 5px;
+}
+
+.tr-error-message, .tr-success-message {
     -moz-animation: cssAnimation 6s ease-in;
     /* Firefox */
     -webkit-animation: cssAnimation 6s ease-in;
@@ -79,7 +106,7 @@
 @keyframes cssAnimation {
   0%   {opacity: 0;display:none;}
   /* 2 sec : start fading in*/
-  30%   {opacity: 1;display:block;}
+  20%   {opacity: 1;display:block;}
   /* 2.5 sec : visible */
   40%   {opacity: 1;display:block;}
   /* 4.5 sec : start fading out */
@@ -92,7 +119,7 @@
 @-webkit-keyframes cssAnimation {
   0%   {opacity: 0;display:none;}
   /* 2 sec : start fading in*/
-  30%   {opacity: 1;display:block;}
+  20%   {opacity: 1;display:block;}
   /* 2.5 sec : visible */
   40%   {opacity: 1;display:block;}
   /* 4.5 sec : start fading out */

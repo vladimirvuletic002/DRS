@@ -28,13 +28,18 @@
 
 
 .edit-form input{
-    
+    border: 1px solid rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.5);
+    color: white;
     padding: 10px;
     margin: 10px 10px;
-    border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 16px;
     font-family: SF Pro Display, 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.edit-form .email-input{
+    color: rgb(140, 140, 140);
 }
 
 .edit-form button{
@@ -55,6 +60,7 @@ label{
 
 .h2-edit{
     color: white;
+    font-size: 24px;
 }
 
 table{
@@ -86,7 +92,7 @@ table{
 @keyframes cssAnimation {
   0%   {opacity: 0;display:none;}
   /* 2 sec : start fading in*/
-  30%   {opacity: 1;display:block;}
+  20%   {opacity: 1;display:block;}
   /* 2.5 sec : visible */
   40%   {opacity: 1;display:block;}
   /* 4.5 sec : start fading out */
@@ -99,7 +105,7 @@ table{
 @-webkit-keyframes cssAnimation {
   0%   {opacity: 0;display:none;}
   /* 2 sec : start fading in*/
-  30%   {opacity: 1;display:block;}
+  20%   {opacity: 1;display:block;}
   /* 2.5 sec : visible */
   40%   {opacity: 1;display:block;}
   /* 4.5 sec : start fading out */

@@ -111,7 +111,7 @@ function EditProfile() {
                             <label>Email: </label>
                         </tr>
                         <tr>
-                        <input type="email" name="email" value={userData.email} disabled placeholder="Email (cannot be changed!)" />
+                        <input type="email" name="email" value={userData.email} disabled placeholder="Email (cannot be changed!)" className="email-input" />
                         </tr>
                         <tr>
                             <td><label>Name: </label></td>

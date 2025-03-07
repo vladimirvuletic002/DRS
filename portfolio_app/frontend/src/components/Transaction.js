@@ -8,6 +8,10 @@ function formatPrice(price) {
     return `${price.toFixed(2)}`;
 }
 
+//const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+const proxyUrl = 'https://thingproxy.freeboard.io/fetch/';
+
+
 function Transaction(){
 
     const [query, setQuery] = useState("");
@@ -20,8 +24,6 @@ function Transaction(){
     const [transactionDate, setTransactionDate] = useState("");
 
     const dropdownRef = useRef(null);
-
-    const [ws, setWs] = useState(null);
 
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
@@ -65,53 +67,34 @@ function Transaction(){
         setSuggestions(filteredStocks);
     }, [query, stocks]);
 
-    // Funkcija za odabir akcije
     const handleSelect = (symbol, name) => {
         setQuery(`${symbol} - ${name}`); // Prikaz u input polju
         setSelectedStock(symbol);
         setSuggestions([]); // Sakrivanje liste
         setSelectedStockPrice(0);
 
-        // Ako već postoji WebSocket konekcija, zatvaramo je
-        if (ws) {
-            ws.close();
+        //let timeoutId;
+        async function getLatestPrice() {
+            try {
+                const stocksUrl = `${proxyUrl}https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
+                const response = await fetch(stocksUrl);
+                const data = await response.json();
+                console.log(data);
+                const marketData = data.chart.result[0];
+                setSelectedStockPrice(marketData.meta.regularMarketPrice.toFixed(2));
+                } catch (error) {
+                console.log(error);
+                }
+                //timeoutId = setTimeout(getLatestPrice, 15000);
         }
 
-        // Povezivanje sa Yahoo Finance WebSocket-om
-        const newWs = new WebSocket("wss://streamer.finance.yahoo.com");
+        getLatestPrice();
 
-        protobuf.load("/YPricingData.proto", (error, root) => {
-            if (error) {
-                return console.error("Protobuf error:", error);
-            }
-
-            const Yaticker = root.lookupType("yaticker");
-
-            newWs.onopen = function open() {
-                console.log("WebSocket connected");
-                newWs.send(
-                    JSON.stringify({
-                        subscribe: [symbol], // Pretplaćujemo se samo na izabranu akciju
-                    })
-                );
-            };
-
-            newWs.onmessage = function incoming(message) {
-                const data = Yaticker.decode(new Buffer(message.data, 'base64'));
-                console.log("Received price update:", data);
-
-                // Postavljamo cenu u state
-                setSelectedStockPrice(data.price);
-            };
-
-            newWs.onclose = function close() {
-                console.log("WebSocket disconnected");
-            };
-        });
-
-        setWs(newWs);
+        //clearTimeout(timeoutId);
 
     };
+
+        
 
     // Zatvori meni ako korisnik klikne van njega
     useEffect(() => {
@@ -196,7 +179,7 @@ function Transaction(){
                             autoComplete="off"
                         />
                         {suggestions.length > 0 && (
-                            <ul className="autocomplete-list">
+                            <ul className="autocomplete-list" ref={dropdownRef}>
                                 {suggestions.map((stock, index) => (
                                     <li key={index} onClick={() => handleSelect(stock.symbol, stock.name)}>
                                         {stock.symbol} - {stock.name}
@@ -251,7 +234,7 @@ function Transaction(){
                         <input
                         type="number"
                         name="value"
-                        value={formatPrice(selectedStockPrice)}
+                        value={selectedStockPrice}
                         onChange={(e) => setSelectedStockPrice(e.target.value)}
                         readOnly
                         />
@@ -262,8 +245,8 @@ function Transaction(){
 
                 <button type="submit">Submit Transaction</button>
                 
-                {error && <p className="error-message">{error}</p>}
-                {successMessage && <p className="success-message">{successMessage}</p>}
+                {error && <p className="tr-error-message">{error}</p>}
+                {successMessage && <p className="tr-success-message">{successMessage}</p>}
 
             </form>
             </div>

@@ -2,112 +2,233 @@
     font-family: SF Pro Display, 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: #f4f4f9;
-  }
-  
-  h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 30px;
-  }
-  
-  h2, h3 {
-    color: #333;
-    font-size: 1.5rem;
-    margin-top: 20px;
-  }
-  
-  .actions, .add-action, .add-transaction, .chart-container, .total-value {
-    margin-bottom: 30px;
-  }
-  
-  /* Stilovi za akcije */
-  .action-card {
-    background-color: #fff;
-    padding: 20px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .action-card h3 {
-    font-size: 1.25rem;
-    margin: 0;
-  }
-  
-  .action-card p {
-    margin: 5px 0;
-  }
-  
-  button {
-    background-color: #007bff;
+    background-image: linear-gradient(to bottom left, rgb(59, 0, 176), rgb(37, 1, 63));
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
     color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
+    justify-content: center;
+    display: block;
+    min-height: 100vh;
+}
+
   
-  button:hover {
-    background-color: #0056b3;
-  }
+.label-title{
+  color: rgba(165, 165, 165, 0.925);
+}
+
+.label-net-val{
+  color: rgba(165, 165, 165, 0.925);
+  font-size: 16px;
+}
+
+.label-net-profit{
+  color: rgba(165, 165, 165, 0.925);
+  font-size: 16px;
+}
+
+.label-positions{
+  color: rgba(165, 165, 165, 0.925);
+  font-size: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: white;
+  margin-bottom: 30px;
+}
+
+.net-val {
+  color: white;
+  font-size: 3rem;
+  margin-top: 20px;
+  text-align: left;
+  margin-left: 10px;
+}
+
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-family: SF Pro Display, 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS';
+}
+
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.buy-power-form table{
+  border-collapse: collapse;
+  border-spacing: 2px 1rem;
+}
+
+.buy-power-form button{
+  margin-right: 10px;
+  font-size: 12px;
+  margin-top: -20px;
+}
+
+.buy-power-form table td{
+  vertical-align: middle;
+  text-align: center;
+}
+
+.buy-power-form input{
+  background-color: rgba(0,0,0,0.5);
+  border: none;
+  color: white;
+  padding: 10px;
+  margin: 10px 10px 20px 10px;
+  font-family: SF Pro Display, 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS';
+} 
+
+.buy-power-form .error-message, .success-message{
+  margin-top: 0px;
+  margin-bottom: 1px;
+  font-size: 12px;
+}
+
+.portfolio-investment-data{
+  display:block;
+  background-color: rgba(0,0,0,0.5);
+  max-height: 300px;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9); 
+  width: 100%;
+  max-width: 800px;
+  color: white;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.portfolio-value{
+  display:block;
+  background-color: rgba(0,0,0,0.5);
+  max-height: 300px;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9); 
+  width: 100%;
+  max-width: 800px;
+  color: white;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.prvi{
+  display: inline-block; 
+  max-width: 50%; 
+}
+
+.drugi{
+  display: inline-block; 
+  width: 49%;
+  vertical-align: top;
+  margin-top: 50px;
+
+}
+
+.stocks-view{
+  display:block;
+  background-color: rgba(0,0,0,0.5);
+  max-height: 300px;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9); 
+  width: 100%;
+  max-width: 800px;
+  color: white;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.stocks-table{
+  margin-top: 15px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stocks-table thead{
+  text-align: left;
+  border-bottom: 1px solid rgb(138, 138, 138);
+  padding: 10px;
+}
+
+.stocks-table td{
+  padding: 10px;
+}
+
+.table-symbol-name:hover{
+  cursor: pointer;
+}
+
+.err-message,
+.succ-message {
+  text-align: center;
+  font-size: 12px;
+  margin-bottom: 1px;
+  margin-top: 0px;
+}
   
-  /* Stilovi za formu za dodavanje akcija i transakcija */
-  .add-action, .add-transaction {
-    background-color: #fff;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
+.err-message {
+  background-color: rgb(149, 0, 0);
+  color: white;
+  padding: 10px;
+  width: max-content;
+  border-radius: 5px;
+}
   
-  .add-action input, .add-transaction input, .add-transaction select {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-  }
-  
-  .add-action button, .add-transaction button {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-  }
-  
-  .add-action button:hover, .add-transaction button:hover {
-    background-color: #218838;
-  }
-  
-  /* Stilovi za grafikon */
-  .chart-container {
-    background-color: #fff;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-  
-  /* Stilovi za ukupnu vrednost portfolija */
-  .total-value {
-    background-color: #fff;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-  
-  .total-value h3 {
-    font-size: 1.25rem;
-    color: #333;
-    margin: 10px 0;
-  }
+.succ-message {
+  background-color: green;
+  color: white;
+  padding: 10px;
+  width: max-content;
+  border-radius: 5px;
+}
+
+.err-message, .succ-message {
+  -moz-animation: cssAnimation 6s ease-in;
+  /* Firefox */
+  -webkit-animation: cssAnimation 6s ease-in;
+  /* Safari and Chrome */
+  -o-animation: cssAnimation 6s ease-in;
+  /* Opera */
+  animation: cssAnimation 6s ease-in;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+}
+@keyframes cssAnimation {
+0%   {opacity: 0;display:none;}
+/* 2 sec : start fading in*/
+20%   {opacity: 1;display:block;}
+/* 2.5 sec : visible */
+40%   {opacity: 1;display:block;}
+/* 4.5 sec : start fading out */
+70%   {opacity: 1;display:block;}
+/* 5 sec : not visible */
+80%   {opacity: 0;display:block;}
+/* 6 sec */
+100%   {opacity: 0;display:none;}
+}
+@-webkit-keyframes cssAnimation {
+0%   {opacity: 0;display:none;}
+/* 2 sec : start fading in*/
+20%   {opacity: 1;display:block;}
+/* 2.5 sec : visible */
+40%   {opacity: 1;display:block;}
+/* 4.5 sec : start fading out */
+70%   {opacity: 1;display:block;}
+/* 5 sec : not visible */
+80%   {opacity: 0;display:block;}
+/* 6 sec */
+100%   {opacity: 0;display:none;}
+}

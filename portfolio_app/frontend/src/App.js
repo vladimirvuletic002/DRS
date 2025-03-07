@@ -8,10 +8,7 @@ import Home from "./components/Home";
 import Dashboard from "./components/Dashboard";
 import EditProfile from './components/EditProfile';
 import Transaction from './components/Transaction';
-import protobuf from 'protobufjs';
-
-import WebSocket from 'isomorphic-ws';
-const { Buffer } = require('buffer/');
+import StockChart from './components/StockChart';
 
 
 function App() {
@@ -66,6 +63,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/transaction" element={<Transaction/>} />
+        <Route path="/chart" element={<StockChart/>} />
       </Routes>
 
     </Router>

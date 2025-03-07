@@ -38,7 +38,9 @@
     width: 100%;
     padding: 10px;
     margin: 10px -10px;
-    border: 1px solid #ddd;
+    border: 1px solid rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.5);
+    color: white;
     border-radius: 5px;
     font-size: 16px;
     font-family: SF Pro Display, 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -48,11 +50,14 @@
     width: 95%;
     padding: 10px;
     margin: 10px -20px 10px 1px;
-    border: 1px solid #ddd;
+    border: 1px solid rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.5);
+    color: white;
     border-radius: 5px;
     font-size: 16px;
     font-family: SF Pro Display, 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   }
+
   
   /* Stilizacija dugmeta za submit */
   .auth-form button {
@@ -90,51 +95,53 @@
   }
   
   /* Stilizacija poruka o grešci i uspehu */
-  .error-message,
-  .success-message {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 16px;
-  }
+.error-message,
+.success-message {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 16px;
+}
   
-  .error-message {
-    background-color: rgb(149, 0, 0);
-    color: white;
-    padding: 10px;
-    width: max-content;
-    border-radius: 5px;
-  }
+.error-message {
+  background-color: rgb(149, 0, 0);
+  color: white;
+  padding: 10px;
+  width: max-content;
+  border-radius: 5px;
+}
   
-  .success-message {
-    background-color: green;
-    color: white;
-    padding: 10px;
-    width: max-content;
-    border-radius: 5px;
-  }
+.success-message {
+  background-color: green;
+  color: white;
+  padding: 10px;
+  width: max-content;
+  border-radius: 5px;
+}
   
-  /* Stilizacija zaglavlja */
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    
-  }
+/* Stilizacija zaglavlja */
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  
+}
 
-  .classReg{
-    color: white;
-  }
+.classReg{
+  color: white;
+}
 
-  .classLogin{
-    color: white;
-  }
+.classLogin{
+  color: white;
+}
 
-  .register-question{
-    text-align: center;
-    color: white;
-  }
+.register-question{
+  text-align: center;
+  color: white;
+}
 
-  .register-link:hover{
-    color: darkblue;
-    cursor: pointer;
-  }
+.register-link:hover{
+  color: darkblue;
+  cursor: pointer;
+}
+
+
   

@@ -12,12 +12,17 @@
     "chart.js": "^4.4.7",
     "isomorphic-ws": "^5.0.0",
     "papaparse": "^5.5.1",
+    "plotly.js": "^3.0.1",
     "protobufjs": "^7.4.0",
     "react": "^18.3.1",
+    "react-apexcharts": "^1.7.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
+    "react-plotly.js": "^2.6.0",
     "react-router-dom": "^7.0.2",
     "react-scripts": "5.0.1",
+    "react-sparklines": "^1.7.0",
+    "recharts": "^2.15.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -45,6 +50,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "prettier": "3.5.2"
   }
 }
