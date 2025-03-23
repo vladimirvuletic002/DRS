@@ -171,6 +171,34 @@ button:hover {
   cursor: pointer;
 }
 
+.filter-container {
+  margin-bottom: 15px;
+  text-align: left;
+  margin-top: 20px;
+}
+
+.filter-input {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  width: 100px;
+  max-width: 200px;
+  font-family: SF Pro Display, 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS';
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.filter-input:focus {
+  outline: none;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.filter-input::placeholder {
+  color: rgba(165, 165, 165, 0.7);
+}
+
 .err-message,
 .succ-message {
   text-align: center;

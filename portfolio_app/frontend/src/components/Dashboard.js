@@ -73,6 +73,7 @@ function Dashboard() {
   const [cashBalance, setCashBalance] = useState(0);
   const [netValue, setNetValue] = useState(0);
   const [netPL, setNetPL] = useState(0);
+  const [filterValue, setFilterValue] = useState("");
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -93,6 +94,14 @@ function Dashboard() {
     if (marketValue === 0) return 0;
     return ((netValue * 100) / marketValue);
   }, [marketValue, netValue]);
+
+  const handleFilterChange = (event) => {
+    setFilterValue(event.target.value); 
+  };
+
+  const filteredStocks = userStocks.filter((stock) =>
+    stock.symbol.toLowerCase().includes(filterValue.toLowerCase())  // Filtriranje po simbolu akcije
+  );
 
   // 1. Fetch podataka sa backend-a za ukupnu vrednost pf-a
   /*useEffect(() => {
@@ -355,6 +364,15 @@ function Dashboard() {
         <label className="label-positions">
           My positions ({userStocks.length})
         </label>
+        <div className="filter-container">
+          <input
+            type="text"
+            value={filterValue}
+            onChange={handleFilterChange}
+            placeholder="Filter by symbol..."
+            className="filter-input"
+          />
+        </div>
         <table className="stocks-table">
           <thead>
             <tr>
@@ -367,7 +385,7 @@ function Dashboard() {
             </tr>
           </thead>
           <tbody>
-            {userStocks.map((stock) => (
+            {filteredStocks.map((stock) => (
               <tr key={stock.symbol}>
                 <td
                   onClick={() => goToChartPage(stock)}

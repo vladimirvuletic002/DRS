@@ -15,7 +15,6 @@ from models.stock import Stock
 from models.portfolio import Portfolio
 from config import Config
 from models import db
-
 from datetime import datetime, timezone
 
 app = Flask(__name__)
