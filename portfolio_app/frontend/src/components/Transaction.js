@@ -28,6 +28,8 @@ function Transaction(){
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
+	const token = localStorage.getItem("token");
+
 
     useEffect(() => {
         const loadCSV = async () => {
@@ -138,9 +140,10 @@ function Transaction(){
         try {
             const response = await fetch('http://localhost:5000/transactions', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+					"Authorization": `Bearer ${token}`,
+                	'Content-Type': 'application/json' },
                 body: JSON.stringify(transactionData),
-                credentials: 'include'
             });
 
             const data = await response.json();

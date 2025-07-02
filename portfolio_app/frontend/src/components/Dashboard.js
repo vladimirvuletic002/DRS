@@ -1,67 +1,21 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import NavBar from "./NavBar";
 import "../styles/Dashboard.css"; // Importuj stilove za Dashboard
-import { Line } from "react-chartjs-2"; // Importuj Line grafikon iz chart.js
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-} from "chart.js";
 import { Sparklines, SparklinesLine, SparklinesSpots } from "react-sparklines";
-import Chart from "react-apexcharts";
+import Popup from 'reactjs-popup';
 
-import protobuf from "protobufjs";
-
-const { Buffer } = require("buffer/");
-
-// Registracija komponenti za ChartJS
-ChartJS.register(
-  Title,
-  Tooltip,
-  Legend,
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement
-);
 
 //const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
-
-const chart = {
-  options: {
-    chart: {
-      type: "candlestick",
-      height: 350,
-    },
-    title: {
-      text: "CandleStick Chart",
-      align: "left",
-    },
-    xaxis: {
-      type: "datetime",
-    },
-    yaxis: {
-      tooltip: {
-        enabled: true,
-      },
-    },
-  },
-};
+//const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
+const proxyUrl = "https://api.allorigins.win/raw?url=";
 
 const round = (number) => {
   return number ? +number.toFixed(2) : null;
 };
 
-function formatPrice(price) {
+/*function formatPrice(price) {
   return `${price.toFixed(2)}`;
-}
+} */
 
 function Dashboard() {
   const [marketValue, setMarketValue] = useState(0);
@@ -74,9 +28,16 @@ function Dashboard() {
   const [netValue, setNetValue] = useState(0);
   const [netPL, setNetPL] = useState(0);
   const [filterValue, setFilterValue] = useState("");
+  const [stockStyles, setStockStyle] = useState({});
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [sort, setSort] = useState({ key: 'SYMBOL', direction: "asc" });
+
+  const [selectedStock, setSelectedStock] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const token = localStorage.getItem("token");
 
   const goToChartPage = (stock) => {
     navigate(`/chart?symbol=${stock.symbol}`);
@@ -95,6 +56,8 @@ function Dashboard() {
     return ((netValue * 100) / marketValue);
   }, [marketValue, netValue]);
 
+ 
+  
   const handleFilterChange = (event) => {
     setFilterValue(event.target.value); 
   };
@@ -102,6 +65,7 @@ function Dashboard() {
   const filteredStocks = userStocks.filter((stock) =>
     stock.symbol.toLowerCase().includes(filterValue.toLowerCase())  // Filtriranje po simbolu akcije
   );
+
 
   // 1. Fetch podataka sa backend-a za ukupnu vrednost pf-a
   /*useEffect(() => {
@@ -113,10 +77,47 @@ function Dashboard() {
       .catch(error => console.error("Error fetching value:", error));
   }, []); */
 
+  const headers = [
+    {
+      id: 1,
+      KEY: "symbol",
+      LABEL: "Symbol",
+    },
+    {
+      id: 2,
+      KEY: "quantity",
+      LABEL: "Quantity",
+    },
+    {
+      id: 3,
+      KEY: "LATEST_PRICE",
+      LABEL: "Latest Price",
+    },
+    {
+      id: 4,
+      KEY: "average_price",
+      LABEL: "Avg. Price",
+    },
+    {
+      id: 5,
+      KEY: "P/L",
+      LABEL: "Profit/Loss",
+    },
+    {
+      id: 6,
+      KEY: "P/L%",
+      LABEL: "P/L %",
+    }, 
+  ];
+
   useEffect(() => {
     // Fetch user data from the server
-    fetch("http://localhost:5000/funds", {
-      credentials: "include",
+    fetch("http://localhost:5000/funds", { 
+    	method: "GET",
+    	headers: {
+    	"Authorization": `Bearer ${token}`, 
+    	"Content-Type": "application/json",
+    	},     
     })
       .then((response) => response.json())
       .then((data) => {
@@ -127,6 +128,56 @@ function Dashboard() {
       })
       .catch((error) => console.error("Error fetching user data:", error));
   }, []);
+
+	
+  //brisanje akcije
+  /*const handleDeleteStock = async (stock) => {
+    if (!window.confirm(`Are you sure you want to delete ${stock.symbol}?`)) return;
+  
+    
+      const response = await fetch("http://localhost:5000/delete-stock", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ symbol: stock.symbol }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        // Azuriraj prikaz - izbaci obrisanu akciju sa fronta
+        setUserStocks(prev => prev.filter(s => s.symbol !== stock.symbol));
+      }
+    
+  }; */
+
+  const confirmDelete = async () => {
+    if (!selectedStock) return;
+
+    try {
+      const response = await fetch("http://localhost:5000/delete-stock", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ symbol: selectedStock.symbol }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setUserStocks(prev => prev.filter(s => s.symbol !== selectedStock.symbol));
+      }
+    } catch (error) {
+      console.error("Greška prilikom brisanja akcije:", error);
+    }
+
+    setIsModalOpen(false);
+    setSelectedStock(null);
+  };
 
   // Slanje transakcije na backend
   const handleSubmit = async (event) => {
@@ -140,9 +191,10 @@ function Dashboard() {
       try {
         const response = await fetch("http://localhost:5000/add-funds", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+			"Authorization": `Bearer ${token}`,
+          	"Content-Type": "application/json" },
           body: JSON.stringify(dataForFunds),
-          credentials: "include",
         });
 
         const data = await response.json();
@@ -171,8 +223,13 @@ function Dashboard() {
 
   // 2. Fetch podataka sa backend-a
   useEffect(() => {
+	const token = localStorage.getItem("token");
     fetch("http://localhost:5000/get-stocks", {
-      credentials: "include",
+    	method: "GET",
+    	headers: {
+    	"Authorization": `Bearer ${token}`, 
+    	"Content-Type": "application/json",
+    	},
     })
       .then((response) => response.json())
       .then((data) => setUserStocks(data))
@@ -230,30 +287,70 @@ function Dashboard() {
     };
   }, [userStocks]);
 
-  //TESTIRANJE
-  /*useEffect(() => {
-    const fetchBatchPrices = async () => {
-      try {
-        const symbols = userStocks.map(stock => stock.symbol);
-        console.log('Sending symbols:', symbols); // <-- Proveri da li ovo izlazi
-        const response = await fetch('http://localhost:5000/get-prices', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ symbols })
-        });
-        const prices = await response.json();
-        setStockPrices(prices);
-      } catch (error) {
-        console.error('Error fetching batch stock prices:', error);
-      }
+  //za profit/gubitak
+  useEffect(() => {
+    const calculateStyles = () => {
+      const styles = {};
+      userStocks.forEach((stock) => {  
+        const profitLoss = ((stockPrices[stock.symbol] - stock.average_price) * stock.quantity).toFixed(2);
+        const profitLossPercentage = (((stockPrices[stock.symbol] - stock.average_price) * stock.quantity * 100) / (stockPrices[stock.symbol] * stock.quantity)).toFixed(2);
+  
+        styles[stock.symbol] = {
+          profitLossStyle: profitLoss >= 0 ? { color: "teal" } : { color: "red" },
+          profitLossValue: profitLoss > 0 ? +profitLoss : profitLoss,
+          profitLossPercentageStyle: profitLossPercentage >= 0 ? { color: "teal" } : { color: "red" },
+          profitLossPercentageValue: profitLossPercentage > 0 ? +profitLossPercentage : profitLossPercentage,
+        };
+      });
+      setStockStyle(styles);
     };
   
-    if (userStocks.length > 0) {
-      fetchBatchPrices();
-      const interval = setInterval(fetchBatchPrices, 15000*2);
-      return () => clearInterval(interval);
+    calculateStyles();
+  }, [stockPrices, userStocks]);
+  
+  function handleHeaderClick(header) {
+   setSort({
+    key: header.KEY,
+    direction:
+      header.KEY === sort.key ? sort.direction === "asc" ? "desc" : "asc" : "desc",
+  });
+  }
+
+  function getSortedStocks(stocksToSort){
+
+    /*if(sort.direction === "asc"){
+      return stocksToSort.sort((a,b) => (a[sort.key] > b[sort.key] ? 1 : -1));
     }
-  }, [userStocks]); */
+    return stocksToSort.sort((a,b) => (a[sort.key] > b[sort.key] ? -1 : 1)); */
+    return [...stocksToSort].sort((a, b) => {
+    let valA = a[sort.key];
+    let valB = b[sort.key];
+
+    // Ako sortiramo po ceni, koristimo stockPrices objekat
+    if (sort.key === "LATEST_PRICE") {
+      valA = parseFloat(stockPrices[a.symbol] || 0);
+      valB = parseFloat(stockPrices[b.symbol] || 0);
+    }
+
+    if(sort.key === "P/L"){
+    	valA = parseFloat(stockStyles[a.symbol].profitLossValue || 0);
+    	valB = parseFloat(stockStyles[b.symbol].profitLossValue || 0);
+    }
+
+    if(sort.key === "P/L%"){
+        	valA = parseFloat(stockStyles[a.symbol].profitLossPercentageValue || 0);
+        	valB = parseFloat(stockStyles[b.symbol].profitLossPercentageValue || 0);
+    }
+
+    if (valA === undefined || valA === null) valA = 0;
+    if (valB === undefined || valB === null) valB = 0;
+
+    if (typeof valA === "string") valA = valA.toLowerCase();
+    if (typeof valB === "string") valB = valB.toLowerCase();
+
+    return sort.direction === "asc" ? (valA > valB ? 1 : -1) : (valA > valB ? -1 : 1);
+  });
+  }
 
   return (
     <div className="dashboard-container">
@@ -281,9 +378,8 @@ function Dashboard() {
         
 
         <div
-          className="sparkline-container"
-          style={{ width: "500px", height: "200px" }}
-        >
+          className="sparkline-container">
+          
           <Sparklines data={portfolioHistory}>
             <SparklinesLine
               color={
@@ -307,6 +403,7 @@ function Dashboard() {
       <div className="portfolio-investment-data">
         <form className="buy-power-form" onSubmit={handleSubmit}>
           <table>
+            <tbody>
             <tr>
               <td>
                 <input
@@ -331,10 +428,12 @@ function Dashboard() {
                 )}
               </td>
             </tr>
+            </tbody>
           </table>
         </form>
 
-        <table>
+        <table className="buy-power-labels">
+          <tbody>
           <tr>
             <td>
               <label className="label-title">Market Value</label>
@@ -357,6 +456,7 @@ function Dashboard() {
               <label>{cashBalance} </label>
             </td>
           </tr>
+          </tbody>
         </table>
       </div>
 
@@ -376,16 +476,16 @@ function Dashboard() {
         <table className="stocks-table">
           <thead>
             <tr>
-              <th>Symbol</th>
-              <th>Quantity</th>
-              <th>Latest Price</th>
-              <th>Avg. Price</th>
-              <th>Profit/Loss</th>
-              <th>P/L %</th>
-            </tr>
+	      {headers.map((header,index) => (
+                <th key={index} onClick={() => handleHeaderClick(header)}>
+		  <span>{header.LABEL}</span>
+		  <span className="sort-direction-icon"> {sort.key === header.KEY && (sort.direction === 'asc' ? "▲" : "▼")}</span>
+		</th>
+	      ))}
+	    </tr>
           </thead>
           <tbody>
-            {filteredStocks.map((stock) => (
+            {getSortedStocks(filteredStocks).map((stock) => (
               <tr key={stock.symbol}>
                 <td
                   onClick={() => goToChartPage(stock)}
@@ -396,30 +496,69 @@ function Dashboard() {
                 <td>{stock.quantity}</td>
                 <td>${stockPrices[stock.symbol] || "Loading..."}</td>
                 <td>{stock.average_price}</td>
-                <td
-                  style={
-                    round((stockPrices[stock.symbol] - stock.average_price)*stock.quantity) >= 0
-                      ? { color: "teal" }
-                      : { color: "red" }
-                  }
-                >
-                  {round((stockPrices[stock.symbol] - stock.average_price)*stock.quantity) > 0 ? `+${round((stockPrices[stock.symbol] - stock.average_price) * stock.quantity)}` : round((stockPrices[stock.symbol] - stock.average_price)*stock.quantity)}
+                
+                <td style={stockStyles[stock.symbol]?.profitLossStyle}>
+                        {stockStyles[stock.symbol]?.profitLossValue}
                 </td>
-
-                <td
-                  style={
-                    ((stockPrices[stock.symbol] - stock.average_price)*stock.quantity)*100 / (stockPrices[stock.symbol]*stock.quantity) >= 0
-                      ? { color: "teal" }
-                      : { color: "red" }
-                  }
-                >
-                  {(((stockPrices[stock.symbol] - stock.average_price)*stock.quantity)*100 / (stockPrices[stock.symbol]*stock.quantity)).toFixed(2) > 0 ? `+${(((stockPrices[stock.symbol] - stock.average_price) * stock.quantity * 100) /
-      (stockPrices[stock.symbol] * stock.quantity)).toFixed(2)}` : (((stockPrices[stock.symbol] - stock.average_price)*stock.quantity)*100 / (stockPrices[stock.symbol]*stock.quantity)).toFixed(2)} %
+                <td style={stockStyles[stock.symbol]?.profitLossPercentageStyle}>
+                        {stockStyles[stock.symbol]?.profitLossPercentageValue} %
+                </td>
+                <td>
+                	
+                  <button
+                    className="button"
+                    onClick={() => {
+                      setSelectedStock(stock);
+                      setIsModalOpen(true);
+                    }}
+                  >
+                    Delete
+                  </button>
+                					
+				                  
                 </td>
               </tr>
+
             ))}
           </tbody>
         </table>
+
+            <Popup open={isModalOpen} onClose={() => setIsModalOpen(false)} modal nested>
+                  {(close) => (
+                    <div className="modal">
+                      <button className="close" onClick={close}>
+                        &times;
+                      </button>
+                      <div className="header">Confirm Delete</div>
+                      <div className="content">
+                        Are you sure you want to delete{" "}
+                        <strong>{selectedStock?.symbol}</strong>?
+                      </div>
+                      <div className="actions">
+                        <button
+                          className="yesButton"
+                          onClick={() => {
+                            confirmDelete();
+                            close();
+                          }}
+                        >
+                          Yes
+                        </button>
+                        <button
+                          className="button"
+                          onClick={() => {
+                            setIsModalOpen(false);
+                            setSelectedStock(null);
+                            close();
+                          }}
+                        >
+                          No
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </Popup>
+
       </div>
     </div>
   );

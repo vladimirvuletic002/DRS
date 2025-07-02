@@ -1,0 +1,5 @@
+#settings za vscode
+.vscode
+
+#flask_sesija
+/flask_session

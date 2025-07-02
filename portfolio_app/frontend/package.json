@@ -10,6 +10,7 @@
     "axios": "^1.7.9",
     "buffer": "^6.0.3",
     "chart.js": "^4.4.7",
+    "express": "^4.21.2",
     "isomorphic-ws": "^5.0.0",
     "papaparse": "^5.5.1",
     "plotly.js": "^3.0.1",
@@ -22,6 +23,7 @@
     "react-router-dom": "^7.0.2",
     "react-scripts": "5.0.1",
     "react-sparklines": "^1.7.0",
+    "reactjs-popup": "^2.0.6",
     "recharts": "^2.15.1",
     "web-vitals": "^2.1.4"
   },
@@ -52,5 +54,10 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "prettier": "3.5.2"
-  }
+  },
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

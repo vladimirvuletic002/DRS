@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/auth.css'; 
 
@@ -8,6 +8,7 @@ const Login = ({ onLogin }) => {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
+  
 
   const clearMessages = () => {
     setTimeout(() => {
@@ -26,7 +27,6 @@ const Login = ({ onLogin }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-        credentials: 'include',
       });
 
       const data = await response.json();
@@ -34,8 +34,9 @@ const Login = ({ onLogin }) => {
       if (response.ok) {
         setSuccessMessage("Uspešno ste prijavljeni!");
         setError("");
-        onLogin(email); // Prosledi email roditelju (App.js)
-        navigate('/dashboard'); // Preusmeravanje na dashboard
+        //onLogin(email, data.access_token); // Prosledi email roditelju (App.js)
+		onLogin(email, data.token);
+        navigate('/'); // Preusmeravanje na dashboard
       } else {
         setError(data.error || "Neispravni kredencijali. Pokušajte ponovo.");
         setSuccessMessage("");

@@ -1,42 +1,100 @@
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import time
-
+import jwt
+import requests
 from flask import Flask, render_template, request, redirect, url_for, session, make_response, jsonify
 from flask_session import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS  # Uvozimo CORS
 from sqlalchemy import func, case
-
+from multiprocessing import Process
 from models.user import User
 from models.transaction import Transaction
 from models.stock import Stock
 from models.portfolio import Portfolio
 from config import Config
 from models import db
-from datetime import datetime, timezone
+from functools import wraps
+from datetime import datetime, timezone, timedelta
+
+from flask_bcrypt import Bcrypt
+
+
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Siguran ključ za sesiju
+#app.secret_key = 'your_secret_key'  # Siguran ključ za sesiju
+'''app.config["SESSION_TYPE"] = "filesystem"
+Session(app)'''
 app.config.from_object(Config)
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
 
 db.init_app(app)
+bcrypt = Bcrypt(app)
+#jwt = JWTManager(app)
 
 # Omogućavanje CORS-a za sve rute
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": ["http://localhost:3000"]}})
+#CORS(app, supports_credentials=True, resources={r"/*": {"origins": ["http://localhost:3000"]}})
+#CORS(app, supports_credentials=True, expose_headers=["Authorization"])
+CORS(app, supports_credentials=True, origins=["http://localhost:3000"], expose_headers=["Authorization"])
+#CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 
+def token_required(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        token = request.args.get('token')
+        if not token:
+            return jsonify({'Alert': 'Token is missing'})
+        try:
+            payload = jwt.decode(token, app.config['JWT_SECRET_KEY'])
+        except:
+            return jsonify({'Alert': 'Invalid token'})
+        return func(*args, **kwargs)
+    return decorated
 
-# Pocetna stranica
-@app.route('/')
-def index():
-    if 'user_id' in session:
-        return redirect(url_for('dashboard'))
-    return render_template('/fronted/public/index.html')
+def authentication():
+    auth_header = request.headers.get('Authorization')
 
+    if not auth_header or not auth_header.startswith("Bearer "):
+        #return jsonify({'error': 'Token is missing'}), 401
+        return None
+        
+    token = auth_header.split("Bearer ")[1]
+
+    try:
+        payload = jwt.decode(token, app.config['JWT_SECRET_KEY'], algorithms=["HS256"])
+    except jwt.ExpiredSignatureError:
+        #return jsonify({'error': 'Token has expired'}), 401
+        return None
+    except jwt.InvalidTokenError:
+        #return jsonify({'error': 'Invalid token'}), 401
+        return None
+
+    user_id = payload['user_id']
+    return user_id
+
+'''@app.route('/price/<symbol>', methods=['GET'])
+def get_price(symbol):
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Baca grešku ako nije 2xx
+        data = response.json()
+        print(f"Yahoo response for {symbol}: ", data) #DEBUG
+
+        #prover validnosti
+        if(data.get("chart") and
+            data["chart"].get("result") and
+            data["chart"]["result"][0].get("meta") and
+            data["chart"]["result"][0]["meta"].get("regularMarketPrice") is not None):
+            return jsonify(data)
+        else:
+            print(f"Neispravni podaci za {symbol}")
+            return jsonify({'error': f"Nema validnih podataka za {symbol}"}), 502
+    except requests.exceptions.RequestException as e:
+        print(f"Greška prilikom dohvatanja podataka za {symbol}: {e}")
+        return jsonify({'error': 'Neuspešno dohvaćeni podaci sa Yahoo Finance'}), 500
+   ''' 
 
 # Prijava korisnika
 @app.route('/login', methods=['POST'])
@@ -50,9 +108,14 @@ def login():
 
         # Proveri da li postoji korisnik i da li lozinka odgovara
         if user and check_password_hash(user.password_hash, password):  # user[2] je password iz tuple-a
-            session['user_id'] = user.id  # user[0] je id iz tuple-a
-            session['user_name'] = user.email  # user[1] je email iz tuple-a
-            return jsonify({'message': 'Prijavljeni ste uspešno!'}), 200
+            #session['user_id'] = user.id  # user[0] je id iz tuple-a
+            #session['user_name'] = user.email  # user[1] je email iz tuple-a
+            token = jwt.encode({
+                'user_id': user.id,
+                'expiration': str(datetime.utcnow() + timedelta(minutes=60))
+            },
+                app.config['JWT_SECRET_KEY'])
+            return jsonify({'token': token}), 200
         else:
             return jsonify({'error': 'Invalid email or password!'}), 400
     return jsonify({'error': 'Method not allowed'}), 405
@@ -97,26 +160,18 @@ def register():
     return {'error': 'Method not allowed'}, 405
 
 
-# Odjava korisnika
-@app.route('/logout', methods=['POST'])
-def logout():
-    session.pop('user_id', None)
-    session.pop('user_name', None)
-    return jsonify({'message': 'Logged out successfully'}), 200
-
 # Ruta za dobavljanje podataka o trenutno ulogovanom korisniku
 @app.route('/user', methods=['GET'])
 def get_user():
-    if 'user_id' not in session:
+    user_id = authentication()
+    if not user_id:
         return jsonify({'error': 'Unauthorized'}), 401
 
-    user_id = session['user_id']
-    
-    user = User.query.get(user_id)
+    user = User.query.get(user_id)    
     
     if not user:
         return jsonify({'error': 'User not found'}), 404
-
+        
     return jsonify({
         'first_name': user.first_name,
         'last_name': user.last_name,
@@ -130,17 +185,18 @@ def get_user():
 
 # Ruta za izmenu korisnickih podataka
 @app.route('/edit-profile', methods=['POST'])
+#@token_required
 def update_profile():
-    if 'user_id' not in session:
+    user_id = authentication()
+    if not user_id:
         return jsonify({'error': 'Unauthorized'}), 401
 
-    data = request.get_json()
-    user_id = session['user_id']
-
-    user = User.query.get(user_id)
+    user = User.query.get(user_id)    
 
     if not user:
         return jsonify({'error': 'User not found'}), 404
+
+    data = request.get_json()
 
     user.first_name = data.get('first_name', user.first_name)
     user.last_name = data.get('last_name', user.last_name)
@@ -156,12 +212,20 @@ def update_profile():
 
 # Ruta za promenu lozinke
 @app.route('/change_password', methods=['POST'])
+#@token_required
 def change_password():
-    if 'user_id' not in session:
+    user_id = authentication()
+    if not user_id:
         return jsonify({'error': 'Unauthorized'}), 401
+    
+    user = User.query.get(user_id)    
+        
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
 
     data = request.get_json()
-    user_id = session['user_id']
+
+
 
     current_password = data.get('current_password')
     new_password = data.get('new_password')
@@ -171,7 +235,7 @@ def change_password():
     if new_password != confirm_password:
         return jsonify({'error': 'New password and confirmation do not match'}), 400
 
-    user = User.query.get(user_id)
+    #user = User.query.get(user_id)
 
     if not user or not check_password_hash(user.password_hash, current_password):
         return jsonify({'error': 'Incorrect current password'}), 400
@@ -202,14 +266,24 @@ def get_balance(user_id):
     #return jsonify({'portfolio_value': portfolio_value})
     return balance
 
+#def process_transaction(data, user_id, stock_name, transaction_type, quantity, price):
+    #with app.app_context():
+        
+
+        
 #dodavanje transakcije
 @app.route('/transactions', methods=['POST'])
 def create_transaction():
-    if 'user_id' not in session:
+    user_id = authentication()
+    if not user_id:
         return jsonify({'error': 'Unauthorized'}), 401
     
+    user = User.query.get(user_id)    
+        
+    if not user:
+        return jsonify({'error': 'User not found'}), 404 
+    
     data = request.json
-    user_id = session['user_id']
     stock_name = data.get("stock_name")
     transaction_type = data.get("transaction_type")
     quantity = int(data.get("quantity"))
@@ -230,7 +304,7 @@ def create_transaction():
     symbol_splt, name_splt = stock_name.split(" - ", 1)
 
     stock = Stock.query.filter_by(name=name_splt, user_id=user_id).first()
-    user_portfolio = Portfolio.query.filter_by(user_id=user_id).first() 
+    user_portfolio = Portfolio.query.filter_by(user_id=user_id).first()
 
     if transaction_type == "buy":
         if stock and user_portfolio:
@@ -266,19 +340,73 @@ def create_transaction():
         Transaction.stock_name == stock_name).delete()
         else:
             return jsonify({"error": "Not enough stocks to sell"}), 400
+    
+    # Pokrećemo proces u pozadini
+    #process = threading.Thread(target=process_transaction, args=(data, user_id, stock_name, transaction_type, quantity, price))
+    #process.start()
+
+    # Čekamo da proces završi, ali ne blokiramo glavnu funkciju.
+    #process.join()  # Ovdje možeš ukloniti join ako želiš da proces ne čeka na završetak.
 
     db.session.add(transaction)
     db.session.commit()
 
+
+
     return jsonify({"message": "Transaction recorded successfully"}), 201
+
+#ruta za brisanje akcije iz tabele
+@app.route('/delete-stock', methods=['POST'])
+def delete_stock():
+    user_id = authentication()
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    user = User.query.get(user_id)    
+
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    data = request.get_json()
+    symbol = data.get('symbol')
+
+    if not symbol:
+        return jsonify({'error': 'Missing stock symbol'}), 400
+
+    stock = Stock.query.filter_by(user_id=user_id, symbol=symbol).first()
+
+    if not stock:
+        return jsonify({'error': 'Stock not found'}), 404
+    
+    portfolio = Portfolio.query.filter_by(user_id=user_id).first()
+
+    if not portfolio:
+        return jsonify({'error': 'Portfolio not found'}), 404
+
+    # Vracanje sredstava
+    refund = stock.total_price
+    portfolio.balance += refund
+    portfolio.buy_power += refund
+
+    db.session.delete(stock)
+    db.session.query(Transaction).filter(Transaction.user_id == user_id, Transaction.stock_name.like(f"{symbol} - %")).delete()
+
+    db.session.commit()
+
+    return jsonify({'message': f'Stock {symbol} deleted successfully and funds returned'}), 200    
 
 #rute za dashboard
 @app.route('/get-stocks', methods=['GET'])
 def get_stocks():
-    if 'user_id' not in session:
+    user_id = authentication()
+    if not user_id:
         return jsonify({'error': 'Unauthorized'}), 401
     
-    user_id = session['user_id']
+    user = User.query.get(user_id)    
+        
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
 
     # Dohvati sve akcije koje korisnik poseduje
     stocks = Stock.query.filter_by(user_id=user_id).all()
@@ -315,11 +443,16 @@ def get_stocks():
 #dodavanje sredstava
 @app.route('/add-funds', methods=['POST'])
 def add_funds():
-    if 'user_id' not in session:
+    user_id = authentication()
+    if not user_id:
         return jsonify({'error': 'Unauthorized'}), 401
+    
+    user = User.query.get(user_id)    
+        
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
 
     data = request.json
-    user_id = session['user_id']
     buy_power = float(data.get("buy_power"))
 
     user_portfolio = Portfolio.query.filter_by(user_id=user_id).first()
@@ -339,10 +472,14 @@ def add_funds():
 # Ruta za dobavljanje podataka o novcanim sredstvima 
 @app.route('/funds', methods=['GET'])
 def get_funds():
-    if 'user_id' not in session:
+    user_id = authentication()
+    if not user_id:
         return jsonify({'error': 'Unauthorized'}), 401
-
-    user_id = session['user_id']
+    
+    user = User.query.get(user_id)    
+        
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
     
     user_portfolio = Portfolio.query.filter_by(user_id=user_id).first()
     

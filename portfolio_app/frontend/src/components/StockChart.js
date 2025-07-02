@@ -19,7 +19,7 @@ const chart = {
       
     },
     title: {
-      text: "CandleStick Chart",
+      text: undefined,
       align: "left",
       style: {
         color: "#ffffff", // Bela boja naslova

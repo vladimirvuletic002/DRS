@@ -8,13 +8,15 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     ports:
       - "5000:5000"
     volumes:
       - .:/Flask-BackEnd
-    environment:
-      - DATABASE_URL=mysql+pymysql://vladimir002:1234@database:3306/portfolio_app #mysql+pymysql://root:Shadow2002@localhost:3306/portfolio_db
+    #environment:
+    # - DATABASE_URL=mysql+pymysql://vladimir002:1234@database:3306/portfolio_app #mysql+pymysql://root:Shadow2002@localhost:3306/portfolio_db
+    env_file: ./Flask-BackEnd/.env
     networks:
       - app_network
 
@@ -34,15 +36,22 @@ services:
   # Baza podataka - MySQL
   database:
     image: mysql:8.0
+    container_name: database
     environment:
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_PASSWORD: 1234  # Loza za root korisnika
       MYSQL_DATABASE: portfolio_app
+      MYSQL_USER: vladimir002
     ports:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
     networks:
       - app_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
 
 # Definicija volumena
 volumes:

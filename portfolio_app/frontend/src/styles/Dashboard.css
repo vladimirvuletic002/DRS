@@ -1,3 +1,11 @@
+/*@font-face {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  src: url("https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-regular-webfont.woff");
+} */
+
+@import url('https://v1.fontapi.ir/css/SFProDisplay');
+
 .dashboard-container {
     font-family: SF Pro Display, 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     margin: 0;
@@ -101,7 +109,7 @@ button:hover {
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9); 
-  width: 100%;
+  /*width: 100%; */
   max-width: 800px;
   color: white;
   margin-left: auto;
@@ -117,7 +125,7 @@ button:hover {
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9); 
-  width: 100%;
+  
   max-width: 800px;
   color: white;
   margin-left: auto;
@@ -144,16 +152,19 @@ button:hover {
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9); 
-  width: 100%;
+  
   max-width: 800px;
+  max-height: 30000px;
   color: white;
   margin-left: auto;
   margin-right: auto;
+  /*overflow-y: auto; */
 }
 
 .stocks-table{
   margin-top: 15px;
-  width: 100%;
+  min-width: 100%;
+  max-width: 800px;
   border-collapse: collapse;
 }
 
@@ -198,6 +209,10 @@ button:hover {
 .filter-input::placeholder {
   color: rgba(165, 165, 165, 0.7);
 }
+
+.sort-direction-icon:hover{
+  cursor: pointer;
+} 
 
 .err-message,
 .succ-message {
@@ -259,4 +274,84 @@ button:hover {
 80%   {opacity: 0;display:block;}
 /* 6 sec */
 100%   {opacity: 0;display:none;}
+}
+
+@media screen and (max-width: 560px) {
+	.stocks-view{
+		overflow-x: auto;
+	}
+
+	.buy-power-labels{
+		margin-left: -10px;
+	}
+
+	.buy-power-form table{
+		margin-left: -10px;
+	}
+
+		
+	
+}
+
+@media screen and (max-width: 464px) {
+	.portfolio-investment-data{
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+
+	.buy-power-labels{
+		margin-left: -30px;
+					
+	}
+}
+
+@media screen and (max-width: 400px){
+	.portfolio-investment-data{
+		overflow-x: auto;
+	}
+}
+
+.modal {
+  font-size: 12px;
+  background-color: #333;
+  position: inherit;
+  display: block;
+  color: white;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9);
+}
+.modal > .header {
+  width: 100%;
+  border-bottom: 1px solid gray;
+  font-size: 18px;
+  text-align: center;
+  padding: 5px;
+}
+.modal > .content {
+  width: 100%;
+  padding: 10px 5px;
+}
+.modal > .actions {
+  width: 100%;
+  padding: 10px 5px;
+  margin: auto;
+  text-align: center;
+}
+.modal > .close {
+  cursor: pointer;
+  position: absolute;
+  display: block;
+  padding: 2px 5px;
+  line-height: 20px;
+  right: -10px;
+  top: -10px;
+  font-size: 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #cfcece;
+}
+
+.yesButton{
+  margin: 10px;
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import Register from './components/Register';
 import Login from './components/Login';
@@ -15,36 +15,51 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userEmail, setUserEmail] = useState("");
 
-
   useEffect(() => {
-    const storedAuth = localStorage.getItem("isAuthenticated");
-    const storedEmail = localStorage.getItem("userEmail");
+	const fetchUserData = async () => {
+		const token = localStorage.getItem("token");
 
-    if (storedAuth === "true") {
-      setIsAuthenticated(true);
-      setUserEmail(storedEmail);
-    }
+		if (!token) {
+			setIsAuthenticated(false);
+			return;
+		}
+
+		const response = await fetch("http://localhost:5000/user", {
+			method: "GET",
+			headers: {
+				"Authorization": `Bearer ${token}`  // �� Slanje tokena u headeru
+			}
+		});
+
+		if (response.ok) {
+			const data = await response.json();
+			setIsAuthenticated(true);
+			setUserEmail(data.email);
+		} else {
+			setIsAuthenticated(false);
+		}
+	};
+
+	fetchUserData();
+  }, []); 
 
 
-  }, []);
+  
 
-  const handleLogin = (email) => {
+  const handleLogin = (email,token) => {
+    localStorage.setItem("token", token); 
     setIsAuthenticated(true);
     setUserEmail(email);
-
-    // cuvanje stanja u localStorage
-    localStorage.setItem("isAuthenticated", "true");
-    localStorage.setItem("userEmail", email);
   };
+
+
+  
 
   const handleLogout = () => {
+    localStorage.removeItem("token");  // �� Brišemo token
     setIsAuthenticated(false);
     setUserEmail("");
-
-    // Brisanje stanja iz localStorage
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userEmail");
-  };
+  }; 
   
   return (
     <Router>
@@ -57,8 +72,8 @@ function App() {
 
 
       <Routes>
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login onLogin={handleLogin} />} />
+        <Route path="/register" element={isAuthenticated ? <Home /> : <Register />} />
+        <Route path="/login" element={isAuthenticated ? <Home /> : <Login onLogin={handleLogin} />} />
         <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Home /> } />
         <Route path="/" element={<Home />} />
         <Route path="/edit-profile" element={<EditProfile />} />
@@ -67,7 +82,8 @@ function App() {
       </Routes>
 
     </Router>
-  );
+  ); 
+   
 }
 
 export default App;

@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import "../styles/NavBar.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import appLogo from "../images/app_logo.png";
+import userIcon from "../images/user_icon.png";
 import Papa from "papaparse";
 
-const NavBar = ({ isAuthenticated, userEmail, onLogout }) => {
+const NavBar = ( { isAuthenticated, userEmail, onLogout } ) => {
   //const [showLoginModal, setShowLoginModal] = useState(false);
   const navigate = useNavigate(); // Hook za navigaciju
   const [dropdownVisible, setDropdownVisible] = useState(false); // Stanje za prikaz menija
@@ -15,22 +16,18 @@ const NavBar = ({ isAuthenticated, userEmail, onLogout }) => {
   const [stocks, setStocks] = useState([]);
   const location = useLocation();
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/logout", {
-        method: "POST",
-        credentials: "include",
-      });
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-      if (response.ok) {
+  useEffect(() => {
+  	  	const handleResize = () => setIsMobile(window.innerWidth < 768);
+		window.addEventListener("resize", handleResize);
+
+		return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleLogout = () => {
         onLogout(); // Ažuriranje stanja na frontend-u (npr. setIsAuthenticated(false))
         navigate("/"); // Preusmeravanje na početnu stranicu
-      } else {
-        console.error("Logout failed");
-      }
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
   };
 
   const handleLoginRedirect = () => {
@@ -121,7 +118,7 @@ const NavBar = ({ isAuthenticated, userEmail, onLogout }) => {
       <div className="navbar-container">
         <div className="navbar-logo-container">
           <div className="navbar-logo" onClick={() => navigate("/")}>
-            <img className="logo" src={appLogo} alt="app_logo" width="40" />
+            <img className="logo" src={appLogo} alt="app_logo" />
           </div>
           <div className="navbar-name" onClick={() => navigate("/")}>
             Stocks Portfolio
@@ -137,6 +134,7 @@ const NavBar = ({ isAuthenticated, userEmail, onLogout }) => {
               onChange={(e) => setQuery(e.target.value)}
               autoComplete="off"
             />
+            
             {suggestions.length > 0 && (
               <ul className="search-autocomplete-list" ref={searchDropDownRef}>
                 {suggestions.map((stock, index) => (
@@ -152,7 +150,7 @@ const NavBar = ({ isAuthenticated, userEmail, onLogout }) => {
           {isAuthenticated ? (
             <div className="navbar-user-dropdown" ref={dropdownRef}>
               <button className="navbar-user-email" onClick={toggleDropdown}>
-                {userEmail}
+                {isMobile ? <img className="user-icon" src={userIcon} alt="Search" /> : userEmail}
               </button>
               {dropdownVisible && (
                 <div className="dropdown-menu">

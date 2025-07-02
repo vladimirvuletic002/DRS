@@ -1,0 +1,5 @@
+#ignorisi node_modules
+/node_modules
+
+#ignorisi git fajlove
+*/.gitignore
