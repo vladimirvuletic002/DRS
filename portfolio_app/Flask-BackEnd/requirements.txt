@@ -32,3 +32,6 @@ pymysql
 cryptography
 flask_session
 waitress
+requests
+threading
+functools
