@@ -8,3 +8,4 @@ PyJWT
 requests
 Werkzeug
 waitress
+python-dotenv
