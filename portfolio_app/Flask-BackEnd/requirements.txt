@@ -2,6 +2,7 @@ Flask
 Flask-Session
 Flask-Cors
 Flask-Bcrypt
+Flask-SQLAlchemy
 SQLAlchemy
 PyJWT
 requests
