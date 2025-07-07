@@ -6,8 +6,8 @@ import Popup from 'reactjs-popup';
 
 
 //const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-//const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
-const proxyUrl = "https://api.allorigins.win/raw?url=";
+const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
+//const proxyUrl = "https://api.allorigins.win/raw?url=";
 
 const round = (number) => {
   return number ? +number.toFixed(2) : null;

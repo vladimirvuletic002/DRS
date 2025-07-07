@@ -8,7 +8,7 @@ from flask_session import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS  # Uvozimo CORS
 from sqlalchemy import func, case
-from multiprocessing import Process
+from threading import Thread
 from models.user import User
 from models.transaction import Transaction
 from models.stock import Stock
@@ -73,28 +73,6 @@ def authentication():
     user_id = payload['user_id']
     return user_id
 
-'''@app.route('/price/<symbol>', methods=['GET'])
-def get_price(symbol):
-    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
-    try:
-        response = requests.get(url)
-        response.raise_for_status()  # Baca grešku ako nije 2xx
-        data = response.json()
-        print(f"Yahoo response for {symbol}: ", data) #DEBUG
-
-        #prover validnosti
-        if(data.get("chart") and
-            data["chart"].get("result") and
-            data["chart"]["result"][0].get("meta") and
-            data["chart"]["result"][0]["meta"].get("regularMarketPrice") is not None):
-            return jsonify(data)
-        else:
-            print(f"Neispravni podaci za {symbol}")
-            return jsonify({'error': f"Nema validnih podataka za {symbol}"}), 502
-    except requests.exceptions.RequestException as e:
-        print(f"Greška prilikom dohvatanja podataka za {symbol}: {e}")
-        return jsonify({'error': 'Neuspešno dohvaćeni podaci sa Yahoo Finance'}), 500
-   ''' 
 
 # Prijava korisnika
 @app.route('/login', methods=['POST'])
@@ -292,7 +270,7 @@ def create_transaction():
     if not all([user_id, stock_name, transaction_type, quantity, price]):
         return jsonify({"error": "Missing data"}), 400
 
-    transaction = Transaction(
+    '''transaction = Transaction(
         user_id=user_id,
         stock_name=stock_name,
         transaction_type=transaction_type,
@@ -339,17 +317,16 @@ def create_transaction():
                 db.session.query(Transaction).filter(Transaction.user_id == user_id,
         Transaction.stock_name == stock_name).delete()
         else:
-            return jsonify({"error": "Not enough stocks to sell"}), 400
-    
-    # Pokrećemo proces u pozadini
-    #process = threading.Thread(target=process_transaction, args=(data, user_id, stock_name, transaction_type, quantity, price))
-    #process.start()
+            return jsonify({"error": "Not enough stocks to sell"}), 400'''
 
-    # Čekamo da proces završi, ali ne blokiramo glavnu funkciju.
-    #process.join()  # Ovdje možeš ukloniti join ako želiš da proces ne čeka na završetak.
+    # Pokretanje niti (thread) za obradu transakcije
+    t = Thread(target=process_transaction, args=(user_id, stock_name, transaction_type, quantity, price))
+    t.start()
+    # t.join()
 
-    db.session.add(transaction)
-    db.session.commit()
+
+    #db.session.add(transaction)
+    #db.session.commit()
 
 
 
@@ -427,7 +404,7 @@ def get_stocks():
     # Konvertuj prosečne cene u dict za lakši pristup
     average_price_map = {symbol: round(avg_price, 2) for symbol, avg_price in average_prices}
 
-    # Kreiraj konačnu listu sa dodatom prosečnom cenom
+
     stocks_data = [
         {
             "symbol": stock.symbol,
@@ -490,6 +467,63 @@ def get_funds():
         "funds": user_portfolio.buy_power,
         "balance": user_portfolio.balance        
     }), 200
+
+def process_transaction(user_id, stock_name, transaction_type, quantity, price):
+    with app.app_context():  # vazno za rad sa bazom iz procesa
+        transaction = Transaction(
+            user_id=user_id,
+            stock_name=stock_name,
+            transaction_type=transaction_type,
+            quantity=quantity,
+            price=price,
+            date=datetime.now(timezone.utc).replace(tzinfo=None)
+        )
+
+        symbol_splt, name_splt = stock_name.split(" - ", 1)
+
+        stock = Stock.query.filter_by(name=name_splt, user_id=user_id).first()
+        user_portfolio = Portfolio.query.filter_by(user_id=user_id).first()
+
+        if transaction_type == "buy":
+            if stock and user_portfolio:
+                if user_portfolio.buy_power < price * quantity:
+                    return  # nema dovoljno sredstava
+                transaction_val = price * quantity
+                stock.quantity += quantity
+                stock.total_price += transaction_val
+                if user_portfolio.balance == 0.0:
+                    user_portfolio.balance = get_balance(user_id)
+                user_portfolio.balance -= transaction_val
+                user_portfolio.buy_power -= transaction_val
+            elif user_portfolio:
+                if user_portfolio.buy_power < price * quantity:
+                    return
+                stock = Stock(user_id=user_id, symbol=symbol_splt.strip(), name=name_splt,
+                              total_price=price * quantity, quantity=quantity)
+                if user_portfolio.balance == 0.0:
+                    user_portfolio.balance = get_balance(user_id)
+                user_portfolio.balance -= price * quantity
+                user_portfolio.buy_power -= price * quantity
+                db.session.add(stock)
+            else:
+                return
+        elif transaction_type == "sell":
+            if stock and stock.quantity >= quantity and user_portfolio:
+                stock.quantity -= quantity
+                stock.total_price -= price * quantity
+                user_portfolio.balance += price * quantity
+                user_portfolio.buy_power += price * quantity
+                if stock.quantity == 0:
+                    db.session.delete(stock)
+                    db.session.query(Transaction).filter(
+                        Transaction.user_id == user_id,
+                        Transaction.stock_name == stock_name
+                    ).delete()
+            else:
+                return
+
+        db.session.add(transaction)
+        db.session.commit()
 
 
 # Kreiranje baze ako ne postoji

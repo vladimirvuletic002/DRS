@@ -6,8 +6,8 @@ import "../styles/Home.css";
 import { Sparklines, SparklinesLine, SparklinesSpots } from "react-sparklines";
 
 //const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-//const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
-const proxyUrl = "https://api.allorigins.win/raw?url=";
+const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
+//const proxyUrl = "https://api.allorigins.win/raw?url=";
 
 function Home() {
   const navigate = useNavigate();
