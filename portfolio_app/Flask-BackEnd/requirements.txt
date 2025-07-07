@@ -31,3 +31,4 @@ flask_jwt_extended
 pymysql
 cryptography
 flask_session
+waitress

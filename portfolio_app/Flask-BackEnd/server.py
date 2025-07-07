@@ -17,7 +17,7 @@ from config import Config
 from models import db
 from functools import wraps
 from datetime import datetime, timezone, timedelta
-
+from waitress import serve
 from flask_bcrypt import Bcrypt
 
 
@@ -270,7 +270,7 @@ def create_transaction():
     if not all([user_id, stock_name, transaction_type, quantity, price]):
         return jsonify({"error": "Missing data"}), 400
 
-    '''transaction = Transaction(
+    transaction = Transaction(
         user_id=user_id,
         stock_name=stock_name,
         transaction_type=transaction_type,
@@ -317,16 +317,16 @@ def create_transaction():
                 db.session.query(Transaction).filter(Transaction.user_id == user_id,
         Transaction.stock_name == stock_name).delete()
         else:
-            return jsonify({"error": "Not enough stocks to sell"}), 400'''
+            return jsonify({"error": "Not enough stocks to sell"}), 400
 
     # Pokretanje niti (thread) za obradu transakcije
-    t = Thread(target=process_transaction, args=(user_id, stock_name, transaction_type, quantity, price))
-    t.start()
+    #t = Thread(target=process_transaction, args=(user_id, stock_name, transaction_type, quantity, price))
+    #t.start()
     # t.join()
 
 
-    #db.session.add(transaction)
-    #db.session.commit()
+    db.session.add(transaction)
+    db.session.commit()
 
 
 
@@ -468,7 +468,7 @@ def get_funds():
         "balance": user_portfolio.balance        
     }), 200
 
-def process_transaction(user_id, stock_name, transaction_type, quantity, price):
+'''def process_transaction(user_id, stock_name, transaction_type, quantity, price):
     with app.app_context():  # vazno za rad sa bazom iz procesa
         transaction = Transaction(
             user_id=user_id,
@@ -523,7 +523,7 @@ def process_transaction(user_id, stock_name, transaction_type, quantity, price):
                 return
 
         db.session.add(transaction)
-        db.session.commit()
+        db.session.commit()'''
 
 
 # Kreiranje baze ako ne postoji
@@ -531,4 +531,4 @@ with app.app_context():
     db.create_all()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    serve(app, host='0.0.0.0', port=8080)
