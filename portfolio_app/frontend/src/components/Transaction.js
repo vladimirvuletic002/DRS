@@ -138,7 +138,7 @@ function Transaction(){
         };
 
         try {
-            const response = await fetch('http://localhost:5000/transactions', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/transactions`, {
                 method: 'POST',
                 headers: { 
 					"Authorization": `Bearer ${token}`,

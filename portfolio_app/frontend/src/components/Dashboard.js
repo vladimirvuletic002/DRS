@@ -112,7 +112,7 @@ function Dashboard() {
 
   useEffect(() => {
     // Fetch user data from the server
-    fetch("http://localhost:5000/funds", { 
+    fetch(`${process.env.REACT_APP_API_URL}/funds`, { 
     	method: "GET",
     	headers: {
     	"Authorization": `Bearer ${token}`, 
@@ -157,7 +157,7 @@ function Dashboard() {
     if (!selectedStock) return;
 
     try {
-      const response = await fetch("http://localhost:5000/delete-stock", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/delete-stock`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -189,7 +189,7 @@ function Dashboard() {
       };
 
       try {
-        const response = await fetch("http://localhost:5000/add-funds", {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/add-funds`, {
           method: "POST",
           headers: { 
 			"Authorization": `Bearer ${token}`,
@@ -224,7 +224,7 @@ function Dashboard() {
   // 2. Fetch podataka sa backend-a
   useEffect(() => {
 	const token = localStorage.getItem("token");
-    fetch("http://localhost:5000/get-stocks", {
+    fetch(`${process.env.REACT_APP_API_URL}/get-stocks`, {
     	method: "GET",
     	headers: {
     	"Authorization": `Bearer ${token}`, 

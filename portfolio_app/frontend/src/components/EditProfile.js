@@ -30,7 +30,7 @@ function EditProfile() {
 
   useEffect(() => {
     // Fetch user data from the server
-    fetch("http://localhost:5000/user", {
+    fetch(`${process.env.REACT_APP_API_URL}/user`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,  
@@ -57,7 +57,7 @@ function EditProfile() {
   const handleProfileUpdate = (e) => {
     e.preventDefault();
     
-    fetch("http://localhost:5000/edit-profile", {
+    fetch(`${process.env.REACT_APP_API_URL}/edit-profile`, {
       method: "POST",
       headers: {
 		"Authorization": `Bearer ${token}`,
@@ -87,7 +87,7 @@ function EditProfile() {
       return;
     }
 
-    fetch("http://localhost:5000/change_password", {
+    fetch(`${process.env.REACT_APP_API_URL}/change_password`, {
       method: "POST",
       headers: {
 		"Authorization": `Bearer ${token}`,
