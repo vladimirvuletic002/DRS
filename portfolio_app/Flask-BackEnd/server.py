@@ -35,7 +35,7 @@ bcrypt = Bcrypt(app)
 # Omogućavanje CORS-a za sve rute
 #CORS(app, supports_credentials=True, resources={r"/*": {"origins": ["http://localhost:3000"]}})
 #CORS(app, supports_credentials=True, expose_headers=["Authorization"])
-CORS(app, supports_credentials=True, origins=["http://localhost:3000"], expose_headers=["Authorization"])
+CORS(app, supports_credentials=True, origins=["http://localhost:3000","https://drs-jv2m-frontend.onrender.com", "https://drs-jv2m.onrender.com"], expose_headers=["Authorization"])
 #CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 
