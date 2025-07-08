@@ -9,7 +9,8 @@ function formatPrice(price) {
 }
 
 //const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-const proxyUrl = 'https://thingproxy.freeboard.io/fetch/';
+//const proxyUrl = 'https://thingproxy.freeboard.io/fetch/';
+const proxyUrl = "https://api.allorigins.win/raw?url=";
 
 
 function Transaction(){
