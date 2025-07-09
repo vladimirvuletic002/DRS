@@ -23,14 +23,11 @@ from flask_bcrypt import Bcrypt
 
 
 app = Flask(__name__)
-#app.secret_key = 'your_secret_key'  # Siguran ključ za sesiju
-'''app.config["SESSION_TYPE"] = "filesystem"
-Session(app)'''
 app.config.from_object(Config)
 
 db.init_app(app)
 bcrypt = Bcrypt(app)
-#jwt = JWTManager(app)
+
 
 # Omogućavanje CORS-a za sve rute
 

@@ -130,28 +130,6 @@ function Dashboard() {
   }, []);
 
 	
-  //brisanje akcije
-  /*const handleDeleteStock = async (stock) => {
-    if (!window.confirm(`Are you sure you want to delete ${stock.symbol}?`)) return;
-  
-    
-      const response = await fetch("http://localhost:5000/delete-stock", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ symbol: stock.symbol }),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        // Azuriraj prikaz - izbaci obrisanu akciju sa fronta
-        setUserStocks(prev => prev.filter(s => s.symbol !== stock.symbol));
-      }
-    
-  }; */
 
   const confirmDelete = async () => {
     if (!selectedStock) return;
